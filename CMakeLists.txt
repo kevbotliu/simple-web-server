@@ -38,7 +38,7 @@ include_directories(include)
 # add_library(example_lib src/example_lib.cc)
 
 # TODO(!): Add library to target_link_libraries
-add_executable(server src/server_main.cc)
+add_executable(server src/main.cc)
 target_link_libraries(server Boost::system)
 
 # TODO(!): Update test executable name, srcs, and deps
