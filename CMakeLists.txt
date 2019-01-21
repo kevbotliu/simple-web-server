@@ -34,12 +34,13 @@ message(STATUS "Boost version: ${Boost_VERSION}")
 
 include_directories(include)
 
-# TODO(!): Update name and srcs
-# add_library(example_lib src/example_lib.cc)
+# Libraries
+add_library(server_lib src/server.cc)
+add_library(session_lib src/session.cc)
 
-# TODO(!): Add library to target_link_libraries
-add_executable(server src/main.cc)
-target_link_libraries(server Boost::system)
+# Link libraries
+add_executable(main src/main.cc)
+target_link_libraries(main server_lib session_lib Boost::system)
 
 # TODO(!): Update test executable name, srcs, and deps
 # add_executable(example_lib_test tests/example_lib_test.cc)
@@ -50,4 +51,4 @@ target_link_libraries(server Boost::system)
 
 # TODO(!): Add library under TARGETS and TESTS and lib_test to generate_coverage_report
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server)
+generate_coverage_report(TARGETS main server_lib session_lib)
