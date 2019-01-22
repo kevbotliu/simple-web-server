@@ -152,10 +152,23 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   config_stack.push(config);
   TokenType last_token_type = TOKEN_TYPE_START;
   TokenType token_type;
+
+  bool next = false;
+  std::string match = "listen";
+
   while (true) {
     std::string token;
     token_type = ParseToken(config_file, &token);
-    printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
+    
+    /* Anticipate the listen directive, and get the port number. */
+    if (next == true) {
+        port = atoi(token.c_str());
+        next = false;
+    }
+    else if (!match.compare(token.c_str())) {
+        next = true;
+    }
+
     if (token_type == TOKEN_TYPE_ERROR) {
       break;
     }
@@ -240,4 +253,8 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
       Parse(dynamic_cast<std::istream*>(&config_file), config);
   config_file.close();
   return return_value;
+}
+
+short NginxConfigParser::getPort() {
+  return port;
 }
