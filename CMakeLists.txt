@@ -54,6 +54,6 @@ target_link_libraries(config_parser_test config_parser_lib gtest_main)
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # TODO(!): Add library under TARGETS and TESTS and lib_test to generate_coverage_report
-include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS main server_lib session_lib)
-generate_coverage_report(TARGETS config_parser_lib TESTS config_parser_test)
+# include(cmake/CodeCoverageReportConfig.cmake)
+# generate_coverage_report(TARGETS main server_lib session_lib)
+# generate_coverage_report(TARGETS config_parser_lib TESTS config_parser_test)

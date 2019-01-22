@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     boost::asio::io_service io_service;
 
     using namespace std; // For atoi.
-    server s(io_service, config_out);
+    server s(io_service, parser.getPort());
 
     io_service.run();
   }

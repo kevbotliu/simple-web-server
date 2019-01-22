@@ -1,11 +1,9 @@
 #include "server.h"
 
-server::server(boost::asio::io_service& io_service, NginxConfig config_in)
+server::server(boost::asio::io_service& io_service, short port)
     : io_service_(io_service),
-      acceptor_(io_service),
-      config_(config_in)
+      acceptor_(io_service, tcp::endpoint(tcp::v4(), port))
   {
-    // init here for config file extract
     start_accept();
   }
 
