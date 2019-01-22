@@ -22,11 +22,9 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    printf("%d\n", parser.getPort());
+    // printf("%d\n", parser.getPort());
 
     boost::asio::io_service io_service;
-
-    using namespace std; // For atoi.
     server s(io_service, parser.getPort());
 
     io_service.run();
