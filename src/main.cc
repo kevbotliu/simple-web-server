@@ -9,14 +9,23 @@ int main(int argc, char* argv[])
   {
     if (argc != 2)
     {
-      std::cerr << "Usage: async_tcp_echo_server <port>\n";
+      std::cerr << "Usage: server <config_file>\n";
+      return 1;
+    }
+
+    char* config_file = argv[1];
+    // Validate nginx config file
+    NginxConfigParser parser;
+    NginxConfig config_out;
+    if (!parser.Parse(config_file, &config_out)){
+      std::cerr << "Missing or malformed configuration file detected\n";
       return 1;
     }
 
     boost::asio::io_service io_service;
 
     using namespace std; // For atoi.
-    server s(io_service, atoi(argv[1]));
+    server s(io_service, config_out);
 
     io_service.run();
   }

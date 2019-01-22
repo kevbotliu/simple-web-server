@@ -41,7 +41,7 @@ add_library(config_parser_lib src/config_parser.cc)
 
 # Link libraries
 add_executable(main src/main.cc)
-target_link_libraries(main server_lib session_lib Boost::system)
+target_link_libraries(main server_lib session_lib config_parser_lib Boost::system)
 add_executable(config_parser src/config_parser_main.cc)
 target_link_libraries(config_parser config_parser_lib)
 
