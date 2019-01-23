@@ -49,3 +49,8 @@ TEST_F(NginxConfigParserTest, WithComment) {
   success = parser.Parse("includes_comment_config", &out_config);
   EXPECT_TRUE(success);
 }
+
+TEST_F(NginxConfigParserTest, HttpConfig) {
+  success = parser.Parse("http_config", &out_config);
+  EXPECT_TRUE(success);
+}
