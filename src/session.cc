@@ -27,6 +27,7 @@ void session::handle_read(const boost::system::error_code& error,
     if (!error)
     { 
       std::string body = data_;
+      body = body.substr(0, bytes_transferred);
       std::string response = "";
       std::vector<std::string> lines;
       boost::split(lines, body, boost::is_any_of("\r\n"));
