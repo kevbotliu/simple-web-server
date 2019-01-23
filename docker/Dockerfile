@@ -23,8 +23,8 @@ EXPOSE 80
 ENTRYPOINT ["./main"]
 
 # Copy config file
-COPY --from=builder /usr/src/project/server_config_mult .
+COPY --from=builder /usr/src/project/server_config_cloud .
 
 # Use CMD to specify arguments to ENTRYPOINT
 # TODO(!): Update with real server args
-CMD ["server_config_mult"]
+CMD ["server_config_cloud"]
