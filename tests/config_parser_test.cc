@@ -54,3 +54,8 @@ TEST_F(NginxConfigParserTest, HttpConfig) {
   success = parser.Parse("http_config", &out_config);
   EXPECT_TRUE(success);
 }
+
+TEST_F(NginxConfigParserTest, NoPortConfig) {
+  success = parser.Parse("no_port_config", &out_config);
+  EXPECT_FALSE(success);
+}

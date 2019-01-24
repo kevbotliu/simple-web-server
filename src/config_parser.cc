@@ -155,6 +155,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
 
   bool next = false;
   std::string match = "listen";
+  bool has_port = false;
 
   while (true) {
     std::string token;
@@ -163,6 +164,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
     /* Anticipate the listen directive, and get the port number. */
     if (next == true) {
         port = atoi(token.c_str());
+        has_port = true;
         next = false;
     }
     else if (!match.compare(token.c_str())) {
@@ -219,8 +221,9 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
       }
       config_stack.pop();
     } else if (token_type == TOKEN_TYPE_EOF) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
-          last_token_type != TOKEN_TYPE_END_BLOCK) {
+      if ((last_token_type != TOKEN_TYPE_STATEMENT_END &&
+          last_token_type != TOKEN_TYPE_END_BLOCK) ||
+          !has_port) {
         // Error.
         break;
       }
