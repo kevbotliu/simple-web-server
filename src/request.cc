@@ -32,10 +32,10 @@ void Request::parse()
 	std::regex header_regex("\\\r\\\n(.+?: .+?(?=\\\r\\\n))");
 	while (std::regex_search(s, header_match, header_regex)) {
 		std::string h = header_match.str(1);
-		int delim = h.find(" ");
-    	headers_.push_back(std::make_pair(h.substr(0, delim), h.substr(delim + 1)));
+		int delim = h.find(": ");
+    headers_.push_back(std::make_pair(h.substr(0, delim), h.substr(delim + 2)));
 
-	    s = header_match.suffix();
+	  s = header_match.suffix();
 	}
 	s = s.substr(2);
 

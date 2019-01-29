@@ -42,6 +42,7 @@ add_library(session_test_lib src/session_test.cc)
 
 # Helper Libraries
 add_library(request_lib src/request.cc)
+add_library(response_lib src/response.cc)
 
 # Link libraries
 add_executable(main src/main.cc)
@@ -49,6 +50,7 @@ target_link_libraries(main
 	server_lib
 	session_lib
 	request_lib
+	response_lib
 	config_parser_lib
 	Boost::system)
 add_executable(config_parser src/config_parser_main.cc)
