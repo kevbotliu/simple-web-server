@@ -11,5 +11,5 @@ RUN make coverage
 FROM ubuntu:latest as deploy
 
 # TODO(!): Copy server output binary to "."
-COPY --from=coverage /usr/src/project/coverage/bin/main .
+COPY --from=coverage /usr/src/project/build_coverage/bin/main .
 
