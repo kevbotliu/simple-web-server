@@ -58,5 +58,5 @@ gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 
 # TODO(!): Add library under TARGETS and TESTS and lib_test to generate_coverage_report
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS main server_lib session_lib session_test_lib)
+generate_coverage_report(TARGETS main server_lib session_lib session_test_lib config_parser_lib TESTS config_parser_test)
 #generate_coverage_report(TARGETS config_parser_lib TESTS config_parser_test)
