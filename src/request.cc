@@ -1,3 +1,10 @@
+/*
+ * Request class representing a single HTTP request.
+ * Breaks down raw request string into components.
+ * Makes no assumptions about validity of fields, only syntax.
+ */
+
+
 #include "request.h"
 #include <boost/algorithm/string.hpp>
 #include <regex>
@@ -12,7 +19,7 @@ Request::Request(std::string request_str)
 void Request::parse()
 {
 	std::smatch rline_match;
-	std::regex rline_regex("^(GET \\S+ HTTP\\/1.1)\\\r\\\n.+"); // Hardcoded regex for GET reqs
+	std::regex rline_regex("^([A-Z]+? \\S+ HTTP\\/\\d.\\d)\\\r\\\n.+");
 
 	// Request line
   if (std::regex_search(raw_, rline_match, rline_regex)) {
@@ -46,12 +53,13 @@ void Request::parse()
 	if (s.size() > 2) body_ = s.erase(0, 2);
 }
 
-bool Request::is_valid() {return valid_;}
+bool Request::is_valid_syntax() {return valid_;}
 
 std::string Request::get_method() {return method_;}
 std::string Request::get_path() {return path_;}
 std::string Request::get_version() {return version_;}
 std::vector<std::pair<std::string, std::string>> Request::get_headers() {return headers_;}
 std::string Request::get_body() {return body_;}
+std::string Request::get_raw() {return raw_;}
 
 

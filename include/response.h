@@ -20,7 +20,7 @@ public:
 	bool set_status(int code);
 	void set_headers(std::vector<std::pair<std::string, std::string>> headers);
 	void add_header(std::pair<std::string, std::string> header);
-	std::pair<std::string, std::string> remove_header(int index);
+	// std::pair<std::string, std::string> remove_header(int index);
 	void set_body(std::string body_str);
 	std::string to_string();
 	int size();

@@ -27,14 +27,14 @@ void Response::set_headers(std::vector<std::pair<std::string, std::string>> head
 void Response::add_header(std::pair<std::string, std::string> header) { headers_.push_back(header); }
 
 // Untested and probably buggy!
-std::pair<std::string, std::string> Response::remove_header(int index)
-{
-	if (headers_.size() < index || index < 0) return NULL;
+// std::pair<std::string, std::string> Response::remove_header(int index)
+// {
+// 	if (headers_.size() < index || index < 0) return NULL;
 
-	std::vector<std::pair<std::string, std::string>> old_header = headers_[index];
-	headers_.erase(headers_.begin() + index);
-	return old_header;
-}
+// 	std::vector<std::pair<std::string, std::string>> old_header = headers_[index];
+// 	headers_.erase(headers_.begin() + index);
+// 	return old_header;
+// }
 
 void Response::set_body(std::string body_str) { body_ = body_str; }
 

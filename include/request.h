@@ -10,13 +10,14 @@ class Request
 public:
 	Request(std::string request_str);
 
-	bool is_valid();
+	bool is_valid_syntax();
 
 	std::string get_method();
 	std::string get_path();
 	std::string get_version();
 	std::vector<std::pair<std::string, std::string>> get_headers();
 	std::string get_body();
+	std::string get_raw();
 
 private:
 	void parse();
