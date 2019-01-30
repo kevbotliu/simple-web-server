@@ -69,7 +69,7 @@ add_executable(response_test tests/response_test.cc)
 target_link_libraries(response_test response_lib gtest_main Boost::system)
 
 add_executable(echo_handler_test tests/echo_handler_test.cc)
-target_link_libraries(echo_handler_test echo_handler_lib gtest_main Boost::system)
+target_link_libraries(echo_handler_test request_lib response_lib echo_handler_lib gtest_main Boost::system)
 
 
 # TODO(!): Update with test binary
