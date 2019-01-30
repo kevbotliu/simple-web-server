@@ -6,7 +6,8 @@ Response::Response()
 	: version_(),
 		status_(),
 		headers_(),
-		body_()
+		body_(),
+		valid_(true)
 {}
 
 void Response::set_version(std::string version) { version_ = version; }
@@ -41,16 +42,23 @@ void Response::set_body(std::string body_str) { body_ = body_str; }
 std::string Response::to_string()
 {
 	std::string output;
-	output = version_ + " " + status_ + "\r\n";
 
-	for (std::pair<std::string, std::string> header : headers_) {
-		output += (header.first + ": " + header.second + "\r\n");
+	if (valid_) {
+		output = version_ + " " + status_ + "\r\n";
+
+		for (std::pair<std::string, std::string> header : headers_) {
+			output += (header.first + ": " + header.second + "\r\n");
+		}
+
+		output += "\r\n";
+		output += body_;
 	}
-
-	output += "\r\n";
-	output += body_;
+	else output = "";
 
 	return output;
+	
 }
 
 int Response::size() {return to_string().size();}
+
+void Response::invalidate() {valid_ = false;}

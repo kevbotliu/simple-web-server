@@ -18,6 +18,7 @@ bool EchoHandler::process(Request *req, Response *resp)
 		generate_resp(req, resp);
 		return true;
 	}
+	else resp->invalidate();
 	
 	return false;
 }

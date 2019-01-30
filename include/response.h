@@ -25,10 +25,14 @@ public:
 	std::string to_string();
 	int size();
 
+	void invalidate(); // Temporary!
+
 private:
 	std::string version_;
 	std::string status_;
 	std::vector<std::pair<std::string, std::string>> headers_;
 	std::string body_;
+
+	bool valid_; // Temporary!
 };
 #endif

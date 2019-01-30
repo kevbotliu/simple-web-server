@@ -30,7 +30,7 @@ void session::handle_read(const boost::system::error_code& error,
     if (!error)
     { 
       std::string s = data_;
-      Request *req = new Request(s.substr(0, bytes_transferred));
+      Request *req = new Request(s.substr(0, bytes_transferred-1));
       Response *resp = new Response();
 
       EchoHandler handler(req, resp);

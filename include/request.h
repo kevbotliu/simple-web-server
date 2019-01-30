@@ -20,7 +20,7 @@ public:
 	std::string get_raw();
 
 private:
-	void parse();
+	bool parse();
 
 	bool valid_;
 	std::string raw_;
