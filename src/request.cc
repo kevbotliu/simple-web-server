@@ -38,11 +38,15 @@ bool Request::parse()
   	else return false;
 	}
 
-	// Check no headers
-	if (!s.empty() && (s.find("\r\n") != std::string::npos)) {
-		if (s == "\r\n\r\n") return true;
+	// Check valid no headers
+	if (s.size() >= 4 && s.substr(0, 4) == "\r\n\r\n") {
+		if (s.size() > 4) body_ = s.substr(4);
+		return true;
+	}
 
-		// Headers
+	// Headers
+	if (!s.empty() && (s.find("\r\n") != std::string::npos)) {
+		
 	  std::smatch header_match;
 		std::regex header_regex("\\\r\\\n(.+?: .+?(?=\\\r\\\n))");
 		while (std::regex_search(s, header_match, header_regex)) {
@@ -52,16 +56,12 @@ bool Request::parse()
 
 		  s = header_match.suffix();
 		}
-		s = s.substr(2);
-	}
 
-  // Check header ending \r\n
-	if (s.substr(0,2) == "\r\n") {
-
-		// Request body (for future projects?)
-		if (s.size() > 2) body_ = s.substr(2);
-
-		return true;
+		// Check empty line
+		if (s.size() >= 4 && s.substr(0, 4) == "\r\n\r\n") {
+			if (s.size() > 4) body_ = s.substr(4);
+			return true;
+		}
 	}
 
 	return false;
