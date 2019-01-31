@@ -71,6 +71,7 @@ target_link_libraries(response_test response_lib gtest_main Boost::system)
 add_executable(echo_handler_test tests/echo_handler_test.cc)
 target_link_libraries(echo_handler_test request_lib response_lib echo_handler_lib gtest_main Boost::system)
 
+add_test(integration_test, ../tests/IntegrationTest [WORKING_DIRECTORY ../tests])
 
 # TODO(!): Update with test binary
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
