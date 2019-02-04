@@ -3,8 +3,12 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <boost/log/trivial.hpp>
+
 int main(int argc, char* argv[])
 {
+  BOOST_LOG_TRIVIAL(fatal) << "A fatal severity message";
+
   try
   {
     if (argc != 2)
