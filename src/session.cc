@@ -1,7 +1,7 @@
 #include "session.h"
 #include "request.h"
 #include "response.h"
-#include "echo_handler.h"
+#include "request_handler.h"
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <iostream>
@@ -33,7 +33,7 @@ void session::handle_read(const boost::system::error_code& error,
       Request *req = new Request(s.substr(0, bytes_transferred));
       Response *resp = new Response();
 
-      EchoHandler handler(req, resp);
+      RequestHandler handler(req, resp);
 
       boost::asio::async_write(socket_,
           boost::asio::buffer(resp->to_string(), resp->size()),

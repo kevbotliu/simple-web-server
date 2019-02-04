@@ -1,13 +1,13 @@
-#ifndef ECHO_HANDLER_H
-#define ECHO_HANDLER_H
+#ifndef REQUEST_HANDLER_H
+#define REQUEST_HANDLER_H
 
 #include "request.h"
 #include "response.h"
 
-class EchoHandler
+class RequestHandler
 {
 public:
-	EchoHandler(Request *req, Response *resp);
+	RequestHandler(Request *req, Response *resp);
 	bool succeeded();
 
 private:

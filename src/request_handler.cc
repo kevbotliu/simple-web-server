@@ -1,14 +1,14 @@
-#include "echo_handler.h"
+#include "request_handler.h"
 #include <iostream>
 
-EchoHandler::EchoHandler(Request *req, Response *resp)
+RequestHandler::RequestHandler(Request *req, Response *resp)
 	: succeeded_(true)
 {
 	if (!process(req, resp)) succeeded_ = false;
 }
 
 // (Mainly) Add conditions to this method to conform to spec details
-bool EchoHandler::process(Request *req, Response *resp)
+bool RequestHandler::process(Request *req, Response *resp)
 {
 	if ( 
 		req->is_valid_syntax()
@@ -23,7 +23,7 @@ bool EchoHandler::process(Request *req, Response *resp)
 	return false;
 }
 
-void EchoHandler::generate_resp(Request *req, Response *resp)
+void RequestHandler::generate_resp(Request *req, Response *resp)
 {
 	resp->set_version(req->get_version());
 	resp->set_status(200);
@@ -32,4 +32,4 @@ void EchoHandler::generate_resp(Request *req, Response *resp)
 	resp->set_body(req->get_raw());
 }
 
-bool EchoHandler::succeeded() {return succeeded_;}
+bool RequestHandler::succeeded() {return succeeded_;}

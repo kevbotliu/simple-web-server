@@ -42,7 +42,7 @@ add_library(config_parser_lib src/config_parser.cc)
 # Helper Libraries
 add_library(request_lib src/request.cc)
 add_library(response_lib src/response.cc)
-add_library(echo_handler_lib src/echo_handler.cc)
+add_library(request_handler_lib src/request_handler.cc)
 
 # Link libraries
 add_executable(main src/main.cc)
@@ -51,7 +51,7 @@ target_link_libraries(main
 	session_lib
 	request_lib
 	response_lib
-	echo_handler_lib
+	request_handler_lib
 	config_parser_lib
 	Boost::system)
 add_executable(config_parser src/config_parser_main.cc)
@@ -68,8 +68,8 @@ target_link_libraries(request_test request_lib gtest_main Boost::system)
 add_executable(response_test tests/response_test.cc)
 target_link_libraries(response_test response_lib gtest_main Boost::system)
 
-add_executable(echo_handler_test tests/echo_handler_test.cc)
-target_link_libraries(echo_handler_test request_lib response_lib echo_handler_lib gtest_main Boost::system)
+add_executable(request_handler_test tests/request_handler_test.cc)
+target_link_libraries(request_handler_test request_lib response_lib request_handler_lib gtest_main Boost::system)
 
 add_test(integration_test, ../tests/IntegrationTest [WORKING_DIRECTORY ../tests])
 
@@ -77,7 +77,7 @@ add_test(integration_test, ../tests/IntegrationTest [WORKING_DIRECTORY ../tests]
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(response_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # TODO(!): Add library under TARGETS and TESTS and lib_test to generate_coverage_report
 include(cmake/CodeCoverageReportConfig.cmake)
@@ -89,10 +89,10 @@ generate_coverage_report(
 		config_parser_lib
 		request_lib
 		response_lib
-		echo_handler_lib
+		request_handler_lib
 	TESTS
 		config_parser_test
 		request_test
 		response_test
-		echo_handler_test
+		request_handler_test
 )
