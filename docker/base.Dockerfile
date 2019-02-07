@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     curl \
     libboost-log-dev \
+    libboost-regex-dev\
     libboost-signals-dev \
     libboost-system-dev \
     libgtest-dev \
