@@ -6,11 +6,10 @@
 #include <vector>
 #include <iostream>
 
-session::session(boost::asio::io_service& io_service, NginxConfig *config)
+session::session(boost::asio::io_service& io_service, std::map<std::string, std::vector<std::string>> conf_paths)
     : socket_(io_service),
-      config_(config)
+      conf_paths_(conf_paths)
   {
-    
   }
 
 tcp::socket& session::socket()
@@ -71,30 +70,12 @@ void session::handle_write(const boost::system::error_code& error)
   }
 
 bool session::run_handler(Request *req, Response *resp) {
-  std::string req_path, conf_path;
-  for (const auto& statement : config_->statements_) {
-    if (statement->tokens_[0] == "path" && 
-        statement->tokens_[2] == "StaticHandler" &&
-        statement->tokens_.size() == 3) {
+  std::string req_path = req->get_path();
 
-      req_path = req->get_path();
-      conf_path = statement->tokens_[1];
-      if (req_path.size() >= conf_path.size() &&
-          req_path.substr(0, conf_path.size()) == conf_path) {
+  // std::cout << conf_paths_.count("echo") << ' ' << conf_paths_.count("static") << '\n';
 
-        std::cout << "Entered StaticHandler\n";
-          
-        StaticHandler handler(req, resp);
-        return handler.succeeded();
-      }
-    }
-    
-    if (statement->tokens_[0] == "path" && 
-        statement->tokens_[2] == "EchoHandler" &&
-        statement->tokens_.size() == 3) {
-
-      req_path = req->get_path();
-      conf_path = statement->tokens_[1];
+  if (conf_paths_.count("echo")) {
+    for (std::string conf_path : conf_paths_["echo"]) {
       if (req_path.size() >= conf_path.size() &&
           req_path.substr(0, conf_path.size()) == conf_path) {
 
@@ -105,6 +86,20 @@ bool session::run_handler(Request *req, Response *resp) {
       }
     }
   }
+
+  if (conf_paths_.count("static")) {
+    for (std::string conf_path : conf_paths_["static"]) {
+      if (req_path.size() >= conf_path.size() &&
+          req_path.substr(0, conf_path.size()) == conf_path) {
+
+        std::cout << "Entered StaticHandler\n";
+          
+        StaticHandler handler(req, resp);
+        return handler.succeeded();
+      }
+    }
+  }
+ 
 
   std::cout << "Entered Default Handler (EchoHandler)\n";
 

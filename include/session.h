@@ -5,14 +5,14 @@
 #include <boost/asio.hpp>
 #include <request.h>
 #include <response.h>
-#include "config_parser.h"
+#include <map>
 
 using boost::asio::ip::tcp;
 
 class session
 {
 public:
-	session(boost::asio::io_service& io_service, NginxConfig *config);
+	session(boost::asio::io_service& io_service, std::map<std::string, std::vector<std::string>> conf_paths);
 	tcp::socket& socket();
 	void start();
 
@@ -23,6 +23,6 @@ private:
 	tcp::socket socket_;
   	enum { max_length = 1024 };
   	char data_[max_length];
-  	NginxConfig *config_;
+  	std::map<std::string, std::vector<std::string>> conf_paths_;
 };
 #endif
