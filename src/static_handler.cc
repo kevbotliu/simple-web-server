@@ -21,11 +21,8 @@ bool StaticHandler::process()
 		&& req_->get_method() == "GET"
 		&& req_->get_version() == "HTTP/1.1"
 	) {
-		if(build_response()) {
-			return true;
-		} else {
-			return false;
-		}
+		build_response();
+		return true;
 	}
 	else resp_->invalidate();
 	
@@ -50,10 +47,20 @@ bool StaticHandler::build_response()
 		f.seekg(0, std::ios::beg);
 		f.read(mBuffer, mSize);
 		f.close();
+
+		resp_->set_version(req_->get_version());
+		resp_->set_status(200);
+		std::pair<std::string, std::string> header = std::make_pair("Content-type", ext);
+		resp_->add_header(header);
 		resp_->set_body(std::string(mBuffer, mSize));
+		delete mBuffer;
 		return true;
 	} else {
-		resp_->invalidate();
+		resp_->set_version(req_->get_version());
+		resp_->set_status(404);
+		std::pair<std::string, std::string> header = std::make_pair("Content-type", "text/html");
+		resp_->add_header(header);
+		resp_->set_body("404 Not Found");
 		std::cerr << "Could not open file.";
 		return false;
 	}
@@ -64,7 +71,7 @@ std::string StaticHandler::findFullPath(std::string path) {
 	///static/file.html means you want the 7th character on
 	//std::cerr << path.substr(7);
 	//TODO: configure the home directory
-	return "../.." + path.substr(7);
+	return "/usr/src/projects/bbk-simple-echo-server" + path.substr(7);
 }
 
 void StaticHandler::setExtension(std::string path)

@@ -8,7 +8,8 @@
 
 // Add more when necessary
 static std::map<int, std::string> status_msgs = {
-  {200, "OK"}
+  {200, "OK"},
+  {404, "Not Found"}
 };
 
 class Response
