@@ -9,7 +9,12 @@ public:
 	StaticHandler(Request *req, Response *resp);
 
 	bool process() override;
-	void build_response() override;
+	bool build_response() override;
 
+private:
+	std::string ext;
+	
+	void setExtension(std::string path);
+	std::string findFullPath(std::string path);
 };
 #endif

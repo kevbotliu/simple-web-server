@@ -11,7 +11,7 @@ public:
 		: req_(req), resp_(resp) {}
 	
 	virtual bool process() = 0;
-	virtual void build_response() = 0;
+	virtual bool build_response() = 0;
 
 	bool succeeded() {return succeeded_;}
 protected:

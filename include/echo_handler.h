@@ -9,7 +9,7 @@ public:
 	EchoHandler(Request *req, Response *resp);
 
 	bool process() override;
-	void build_response() override;
+	bool build_response() override;
 
 };
 #endif

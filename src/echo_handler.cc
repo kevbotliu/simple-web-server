@@ -23,11 +23,12 @@ bool EchoHandler::process()
 	return false;
 }
 
-void EchoHandler::build_response()
+bool EchoHandler::build_response()
 {
 	resp_->set_version(req_->get_version());
 	resp_->set_status(200);
 	std::pair<std::string, std::string> header = std::make_pair("Content-type", "text/plain");
 	resp_->add_header(header);
 	resp_->set_body(req_->get_raw());
+	return true;
 }
