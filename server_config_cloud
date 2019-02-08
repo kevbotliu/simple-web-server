@@ -2,4 +2,6 @@ listen 80;
 
 path /echo EchoHandler {}
 
-path /static StaticHandler {}
+path /static StaticHandler {
+	root static_src;
+}

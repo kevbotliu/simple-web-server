@@ -3,6 +3,7 @@
 #include "logger.h"
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 void shutdown_handler(
     const boost::system::error_code& error,
@@ -29,23 +30,23 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    char* config_file = argv[1];
-    // Validate nginx config file
-    NginxConfigParser parser;
-    NginxConfig config_out;
-    if (!parser.Parse(config_file, &config_out)){
-      log.log("Main: Missing or malformed configuration file detected", boost::log::trivial::error);
-      return 1;
-    }
-
-    std::string port_number = std::to_string(parser.getPort());
-    log.log("Main: Configuration Parsed Successfully.", boost::log::trivial::info);
-    std::string message = "Main: Setting up Server on Port " + port_number + "...";
-    log.log(message, boost::log::trivial::info);
+    std::string config_file = argv[1];    
 
     boost::asio::io_service io_service;
     log.log("Main: Starting Server...", boost::log::trivial::info);
-    server s(io_service, parser.getPort(), &config_out);
+
+    NginxConfigParser parser;
+    NginxConfig config;
+    if (!parser.Parse(argv[1], &config)){
+      log.log("Main: Missing or malformed configuration file detected", boost::log::trivial::error);
+      return false;
+    }
+
+    log.log("Main: Configuration Parsed Successfully.", boost::log::trivial::info);
+    std::string message = "Main: Setting up Server on Port " + std::to_string(parser.getPort()) + "...";
+    log.log(message, boost::log::trivial::info);
+
+    server s(io_service, parser.getPort(), config_file);
 
     // Construct a signal set registered for process termination.
     boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);

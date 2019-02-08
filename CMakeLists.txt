@@ -42,10 +42,13 @@ add_library(config_parser_lib src/config_parser.cc)
 # Helper Libraries
 add_library(request_lib src/request.cc)
 add_library(response_lib src/response.cc)
+
+add_library(handler_config_lib src/handler_config.cc)
+add_library(handler_config_builder_lib src/handler_config_builder.cc)
+
 add_library(echo_handler_lib src/echo_handler.cc)
 add_library(static_handler_lib src/static_handler.cc)
 
-# Add & Link log library
 add_library(logger_lib src/logger.cc)
 target_link_libraries(logger_lib Boost::log_setup Boost::log)
 
@@ -56,6 +59,8 @@ target_link_libraries(main
 	session_lib
 	request_lib
 	response_lib
+	handler_config_lib
+	handler_config_builder_lib
 	echo_handler_lib
 	static_handler_lib
 	config_parser_lib
@@ -96,6 +101,8 @@ generate_coverage_report(
 		config_parser_lib
 		request_lib
 		response_lib
+		handler_config_lib
+		handler_config_builder_lib
 		echo_handler_lib
 		static_handler_lib
 	TESTS

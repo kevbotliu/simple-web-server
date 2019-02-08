@@ -4,25 +4,23 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "session.h"
-#include <map>
-#include "config_parser.h"
 #include "logger.h"
+#include "handler_config.h"
 
 using boost::asio::ip::tcp;
 
 class server
 {
 public:
-	server(boost::asio::io_service& io_service, short port, NginxConfig *config);
+	server(boost::asio::io_service& io_service, short port, std::string config_file);
 
 private:
-	void init_handlers();
+	void init_config(std::string config_file);
 	void start_accept();
 	void handle_accept(session* new_session, const boost::system::error_code& error);
 	boost::asio::io_service& io_service_;
   	tcp::acceptor acceptor_;
-  	NginxConfig *config_;
-  	std::map<std::string, std::vector<std::string>> conf_paths_;
+  	HandlerConfig* config_;
 	logger log;
 };
 #endif

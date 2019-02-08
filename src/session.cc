@@ -6,9 +6,9 @@
 #include <vector>
 #include <iostream>
 
-session::session(boost::asio::io_service& io_service, std::map<std::string, std::vector<std::string>> conf_paths)
+session::session(boost::asio::io_service& io_service, HandlerConfig* config)
     : socket_(io_service),
-      conf_paths_(conf_paths),
+      config_(config),
       log()
   {
   }
@@ -73,33 +73,25 @@ void session::handle_write(const boost::system::error_code& error)
 bool session::run_handler(Request *req, Response *resp) {
   std::string req_path = req->get_path();
 
-  // std::cout << conf_paths_.count("echo") << ' ' << conf_paths_.count("static") << '\n';
   std::string ip_addr = socket().remote_endpoint().address().to_string();
 
-  if (conf_paths_.count("echo")) {
-    for (std::string conf_path : conf_paths_["echo"]) {
-      if (req_path.size() >= conf_path.size() &&
-          req_path.substr(0, conf_path.size()) == conf_path) {
+  for (Handler handler : config_->handlers_) {
+    for (std::string path : handler.paths) {
 
-        std::string message = "Session: IP: " + ip_addr + ": Entered EchoHandler.";
+      if (req_path.substr(0, path.size()) == path) {
+        std::string message = "Session: IP: " + ip_addr + ": Entered " + handler.name + ".";
         log.log(message, boost::log::trivial::info);
 
-        EchoHandler handler(req, resp);
-        return handler.succeeded();
-      }
-    }
-  }
-
-  if (conf_paths_.count("static")) {
-    for (std::string conf_path : conf_paths_["static"]) {
-      if (req_path.size() >= conf_path.size() &&
-          req_path.substr(0, conf_path.size()) == conf_path) {
-
-        std::string message = "Session: IP: " + ip_addr + ": Entered StaticHandler.";
-        log.log(message, boost::log::trivial::info);
-          
-        StaticHandler handler(req, resp);
-        return handler.succeeded();
+        // REQUEST HANDLERS
+        if (handler.name == "EchoHandler") {
+          EchoHandler req_handler(req, resp);
+          return req_handler.succeeded();
+        }
+        if (handler.name == "StaticHandler") {
+          StaticHandler req_handler(req, resp, handler.root_dir);
+          return req_handler.succeeded();
+        }
+        
       }
     }
   }

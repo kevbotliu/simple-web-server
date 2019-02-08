@@ -7,8 +7,8 @@
 #include <iostream>
 
 
-StaticHandler::StaticHandler(Request *req, Response *resp)
-	: RequestHandler(req, resp)
+StaticHandler::StaticHandler(Request *req, Response *resp, std::string root_dir)
+	: RequestHandler(req, resp, root_dir)
 {
 	succeeded_ = process();
 }

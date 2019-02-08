@@ -6,7 +6,7 @@
 class StaticHandler : public RequestHandler
 {
 public:
-	StaticHandler(Request *req, Response *resp);
+	StaticHandler(Request *req, Response *resp, std::string root_dir);
 
 	bool process() override;
 	bool build_response() override;

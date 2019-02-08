@@ -1,42 +1,29 @@
 #include "server.h"
-#include "logger.h"
 
-server::server(boost::asio::io_service& io_service, short port, NginxConfig *config)
+#include "handler_config_builder.h"
+
+server::server(boost::asio::io_service& io_service, short port, std::string config_file)
     : io_service_(io_service),
       acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
-      config_(config),
       log()
   {
-    init_handlers();
+    init_config(config_file);
     start_accept();
   }
 
-void server::init_handlers() {
-  log.log("Server: Initializing Handlers...", boost::log::trivial::info);
-  std::vector<std::string> static_paths, echo_paths;
-  for (const auto& statement : config_->statements_) {
-    if (statement->tokens_[0] == "path" && 
-        statement->tokens_[2] == "StaticHandler" &&
-        statement->tokens_.size() == 3) {
-
-      static_paths.push_back(statement->tokens_[1]);
-    }
-    
-    if (statement->tokens_[0] == "path" && 
-        statement->tokens_[2] == "EchoHandler" &&
-        statement->tokens_.size() == 3) {
-
-      echo_paths.push_back(statement->tokens_[1]);
-    }
-  }
-  if (!echo_paths.empty()) conf_paths_["echo"] = echo_paths;
-  if (!static_paths.empty()) conf_paths_["static"] = static_paths;
+void server::init_config(std::string config_file) {
+  config_ = HandlerConfigBuilder()
+    .set_config(config_file)
+    .register_handler("EchoHandler")
+    .register_handler("StaticHandler")
+    .build();
+  if (!config_->extract()) exit(1);
 }
 
 void server::start_accept()
   {
     log.log("Server: Starting Acceptor...", boost::log::trivial::info);
-    session* new_session = new session(io_service_, conf_paths_);
+    session* new_session = new session(io_service_, config_);
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
           boost::asio::placeholders::error));
