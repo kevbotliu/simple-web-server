@@ -11,7 +11,7 @@ void shutdown_handler(
   if (!error)
   {
     logger log; 
-    log.log("Main: Server Shut Down.", boost::log::trivial::error);
+    log.log("Main: Server Shut Down.", boost::log::trivial::info);
     exit(0);
   }
 }
