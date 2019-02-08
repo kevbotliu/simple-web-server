@@ -6,6 +6,7 @@
 #include "session.h"
 #include <map>
 #include "config_parser.h"
+#include "logger.h"
 
 using boost::asio::ip::tcp;
 
@@ -22,5 +23,6 @@ private:
   	tcp::acceptor acceptor_;
   	NginxConfig *config_;
   	std::map<std::string, std::vector<std::string>> conf_paths_;
+	logger log;
 };
 #endif

@@ -6,13 +6,14 @@
 
 int main(int argc, char* argv[])
 {
-  logger server_log; 
+  logger log; 
+  log.init_logging("main.log");
 
   try
   {
     if (argc != 2)
     {
-      server_log.trivial_logging("Server Log: Usage: server <config_file>");
+      log.log("Main: Usage: server <config_file>", boost::log::trivial::error);
       return 1;
     }
 
@@ -21,22 +22,26 @@ int main(int argc, char* argv[])
     NginxConfigParser parser;
     NginxConfig config_out;
     if (!parser.Parse(config_file, &config_out)){
-      server_log.trivial_logging("Server Log: Missing or malformed configuration file detected");
+      log.log("Main: Missing or malformed configuration file detected", boost::log::trivial::error);
       return 1;
     }
 
-    // printf("%d\n", parser.getPort());
+    std::string port_number = std::to_string(parser.getPort());
+    log.log("Main: Configuration Parsed Successfully.", boost::log::trivial::info);
+    std::string message = "Main: Setting up Server on Port " + port_number + "...";
+    log.log(message, boost::log::trivial::info);
 
     boost::asio::io_service io_service;
+    log.log("Main: Starting Server...", boost::log::trivial::info);
     server s(io_service, parser.getPort(), &config_out);
 
     io_service.run();
   }
   catch (std::exception& e)
   {
-    std::string error_message = "Server Log: Exception: ";
+    std::string error_message = "Main: Exception: ";
     error_message += e.what();
-    server_log.trivial_logging(error_message);
+    log.log(error_message, boost::log::trivial::error);
   }
 
   return 0;

@@ -9,6 +9,8 @@
 #include <boost/log/utility/setup/formatter_parser.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/support/date_time.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
 #include <boost/thread.hpp>
 
 namespace keywords = boost::log::keywords;
@@ -18,8 +20,8 @@ class logger
 {
   public:
     logger();
-    void trivial_logging(std::__cxx11::string error_message);
+    void log(std::__cxx11::string message, boost::log::trivial::severity_level sev_lvl);
+    void init_logging(std::string log_name);
   private:
-    void init_logging();
 };
 #endif

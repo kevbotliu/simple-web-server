@@ -6,6 +6,7 @@
 #include <request.h>
 #include <response.h>
 #include <map>
+#include "logger.h"
 
 using boost::asio::ip::tcp;
 
@@ -24,5 +25,6 @@ private:
   	enum { max_length = 1024 };
   	char data_[max_length];
   	std::map<std::string, std::vector<std::string>> conf_paths_;
+	logger log;
 };
 #endif
