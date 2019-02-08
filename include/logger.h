@@ -18,6 +18,7 @@ class logger
 {
   public:
     logger();
+    void trivial_logging(std::__cxx11::string error_message);
   private:
     void init_logging();
 };

@@ -6,13 +6,13 @@
 
 int main(int argc, char* argv[])
 {
-  logger l; 
+  logger server_log; 
 
   try
   {
     if (argc != 2)
     {
-      BOOST_LOG_TRIVIAL(error)  << "Usage: server <config_file>";
+      server_log.trivial_logging("Server Log: Usage: server <config_file>");
       return 1;
     }
 
@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     NginxConfigParser parser;
     NginxConfig config_out;
     if (!parser.Parse(config_file, &config_out)){
-      BOOST_LOG_TRIVIAL(error) << "Missing or malformed configuration file detected";
+      server_log.trivial_logging("Server Log: Missing or malformed configuration file detected");
       return 1;
     }
 
@@ -34,7 +34,9 @@ int main(int argc, char* argv[])
   }
   catch (std::exception& e)
   {
-    BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what();
+    std::string error_message = "Server Log: Exception: ";
+    error_message += e.what();
+    server_log.trivial_logging(error_message);
   }
 
   return 0;

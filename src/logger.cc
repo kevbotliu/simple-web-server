@@ -35,3 +35,6 @@ void logger::init_logging() {
   boost::log::add_console_log(); 
 }
 
+void logger::trivial_logging(std::__cxx11::string error_message) {
+    BOOST_LOG_TRIVIAL(error)  << error_message;
+}
