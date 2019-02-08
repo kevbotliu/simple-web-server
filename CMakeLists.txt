@@ -44,6 +44,10 @@ add_library(request_lib src/request.cc)
 add_library(response_lib src/response.cc)
 add_library(request_handler_lib src/request_handler.cc)
 
+# Add & Link log library
+add_library(logger_lib src/logger.cc)
+target_link_libraries(logger_lib Boost::log_setup Boost::log)
+
 # Link libraries
 add_executable(main src/main.cc)
 target_link_libraries(main
@@ -54,11 +58,10 @@ target_link_libraries(main
 	request_handler_lib
 	config_parser_lib
 	Boost::system
-	Boost::log_setup
-	Boost::log)
+	logger_lib
+)
 add_executable(config_parser src/config_parser_main.cc)
 target_link_libraries(config_parser config_parser_lib)
-
 
 # TODO(!): Update test executable name, srcs, and deps
 add_executable(config_parser_test tests/config_parser_test.cc)
