@@ -4,6 +4,18 @@
 #include <cstdlib>
 #include <iostream>
 
+void shutdown_handler(
+    const boost::system::error_code& error,
+    int signal_number)
+{
+  if (!error)
+  {
+    logger log; 
+    log.log("Main: Server Shut Down.", boost::log::trivial::error);
+    exit(0);
+  }
+}
+
 int main(int argc, char* argv[])
 {
   logger log; 
@@ -35,7 +47,13 @@ int main(int argc, char* argv[])
     log.log("Main: Starting Server...", boost::log::trivial::info);
     server s(io_service, parser.getPort(), &config_out);
 
+    // Construct a signal set registered for process termination.
+    boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
+    signals.async_wait(shutdown_handler);
     io_service.run();
+
+    // Start an asynchronous wait for one of the signals to occur.
+
   }
   catch (std::exception& e)
   {
