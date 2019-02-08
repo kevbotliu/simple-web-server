@@ -3,7 +3,6 @@
 
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
-#include "config_parser.h"
 #include "session.h"
 
 using boost::asio::ip::tcp;
@@ -11,12 +10,13 @@ using boost::asio::ip::tcp;
 class server
 {
 public:
-	server(boost::asio::io_service& io_service, short port);
+	server(boost::asio::io_service& io_service, short port, NginxConfig *config);
 
 private:
 	void start_accept();
 	void handle_accept(session* new_session, const boost::system::error_code& error);
 	boost::asio::io_service& io_service_;
   	tcp::acceptor acceptor_;
+  	NginxConfig *config_;
 };
 #endif

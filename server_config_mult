@@ -1,4 +1,6 @@
-server {
-    listen 8080;
-    server_name localhost;
-}
+listen 8080;
+server_name localhost;
+
+path /echo EchoHandler {}
+
+path /static StaticHandler {}

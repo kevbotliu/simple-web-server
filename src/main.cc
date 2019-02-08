@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     // printf("%d\n", parser.getPort());
 
     boost::asio::io_service io_service;
-    server s(io_service, parser.getPort());
+    server s(io_service, parser.getPort(), &config_out);
 
     io_service.run();
   }

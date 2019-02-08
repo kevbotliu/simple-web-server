@@ -7,12 +7,16 @@
 class RequestHandler
 {
 public:
-	RequestHandler(Request *req, Response *resp);
-	bool succeeded();
+	RequestHandler(Request *req, Response *resp)
+		: req_(req), resp_(resp) {}
+	
+	virtual bool process() = 0;
+	virtual void build_response() = 0;
 
-private:
-	bool process(Request *req, Response *resp);
-	void generate_resp(Request *req, Response *resp);
+	bool succeeded() {return succeeded_;}
+protected:
+	Request *req_;
+	Response *resp_;
 	bool succeeded_;
 };
 #endif
