@@ -71,7 +71,7 @@ std::string StaticHandler::findFullPath(std::string path) {
 	///static/file.html means you want the 7th character on
 	//std::cerr << path.substr(7);
 	//TODO: configure the home directory
-	return "/usr/src/projects/bbk-simple-echo-server/" + root_dir_ + path.substr(7);
+	return "/usr/src/project/" + root_dir_ + path.substr(7);
 }
 
 void StaticHandler::setExtension(std::string path)
