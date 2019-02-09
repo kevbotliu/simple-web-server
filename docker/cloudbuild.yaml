@@ -27,7 +27,7 @@ steps:
   args: [
     'build',
     '-f', 'docker/coverage.Dockerfile',
-    '-t', 'gcr.io/$PROJECT_ID/bbk-simple-echo-server:latest',
+    '-t', 'gcr.io/$PROJECT_ID/bbk-simple-echo-server:coverage',
     '.'
   ]
 images: ['gcr.io/$PROJECT_ID/bbk-simple-echo-server:base', 'gcr.io/$PROJECT_ID/bbk-simple-echo-server:latest']
