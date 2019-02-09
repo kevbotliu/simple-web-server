@@ -27,6 +27,7 @@ COPY --from=builder /usr/src/project/server_config_cloud .
 # COPY --from=builder /usr/src/project/static_src/ ../static_src/
 
 COPY static_src/* /usr/src/project/static_src/
+COPY static_src1/* /usr/src/project/static_src1/
 
 # Use CMD to specify arguments to ENTRYPOINT
 # TODO(!): Update with real server args
