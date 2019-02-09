@@ -5,7 +5,3 @@ path /echo EchoHandler {}
 path /static StaticHandler {
 	root static_src;
 }
-
-path /static1 StaticHandler {
-	root static_src1;
-}
