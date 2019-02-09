@@ -42,7 +42,7 @@ void session::handle_read(const boost::system::error_code& error,
       else output = "";
 
       boost::asio::async_write(socket_,
-          boost::asio::buffer(output, output.size()),
+          boost::asio::buffer(output, output.length()),
           boost::bind(&session::handle_write, this,
             boost::asio::placeholders::error));
 
@@ -57,17 +57,18 @@ void session::handle_read(const boost::system::error_code& error,
 
 void session::handle_write(const boost::system::error_code& error)
   {
-    if (!error)
-    {
-      socket_.async_read_some(boost::asio::buffer(data_, max_length),
-          boost::bind(&session::handle_read, this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
-    }
-    else
-    {
-      delete this;
-    }
+    delete this;
+    // if (!error)
+    // {
+    //   socket_.async_read_some(boost::asio::buffer(data_, max_length),
+    //       boost::bind(&session::handle_read, this,
+    //         boost::asio::placeholders::error,
+    //         boost::asio::placeholders::bytes_transferred));
+    // }
+    // else
+    // {
+    //   delete this;
+    // }
   }
 
 bool session::run_handler(Request *req, Response *resp) {
