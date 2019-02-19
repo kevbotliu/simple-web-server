@@ -1,8 +1,13 @@
 listen 8080;
-server_name localhost;
 
-path /echo EchoHandler {}
+root /usr/src/projects/;
 
-path /static StaticHandler {
+handler static {
+	location /static;
 	root static_src;
+	log warn static.log;
+}
+
+handler echo {
+	location /echo;
 }

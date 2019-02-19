@@ -1,7 +1,13 @@
 listen 80;
 
-path /echo EchoHandler {}
+root /usr/src/projects/
 
-path /static StaticHandler {
-	root static_src;
+handler static {
+	location /static
+	root static_src
+	log warn static.log
+}
+
+handler echo {
+	location /echo
 }
