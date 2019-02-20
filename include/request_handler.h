@@ -2,24 +2,15 @@
 #define REQUEST_HANDLER_H
 
 #include "request.h"
-#include "response.h"
+#include "reply.h"
+#include "config_parser.h"
+#include <memory>
 
-class RequestHandler
-{
+class RequestHandler {
 public:
-	RequestHandler(Request *req, Response *resp)
-		: req_(req), resp_(resp), root_dir_(".") {}
-	RequestHandler(Request *req, Response *resp, std::string root)
-		: req_(req), resp_(resp), root_dir_(root) {}
-	
-	virtual bool process() = 0;
-	virtual bool build_response() = 0;
-
-	bool succeeded() {return succeeded_;}
+	virtual std::unique_ptr<Reply> HandleRequest(const Request& request) = 0;
 protected:
-	Request *req_;
-	Response *resp_;
-	bool succeeded_;
-	std::string root_dir_;
+	NginxConfig config;
+	std::string root_path_;
 };
 #endif

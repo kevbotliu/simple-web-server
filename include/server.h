@@ -4,15 +4,14 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "session.h"
-#include "logger.h"
-#include "handler_config.h"
+#include "dispatcher.h"
 
 using boost::asio::ip::tcp;
 
 class server
 {
 public:
-	server(boost::asio::io_service& io_service, short port, std::string config_file);
+	server(boost::asio::io_service& io_service, NginxConfig& config, short port);
 
 private:
 	void init_config(std::string config_file);
@@ -20,7 +19,7 @@ private:
 	void handle_accept(session* new_session, const boost::system::error_code& error);
 	boost::asio::io_service& io_service_;
   	tcp::acceptor acceptor_;
-  	HandlerConfig* config_;
+  	Dispatcher* dispatcher_;
 	logger log;
 };
 #endif

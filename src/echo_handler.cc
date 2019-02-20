@@ -1,34 +1,24 @@
 #include "echo_handler.h"
 
-
-EchoHandler::EchoHandler(Request *req, Response *resp)
-	: RequestHandler(req, resp)
-{
-	succeeded_ = process();
+RequestHandler* EchoHandler::create(const NginxConfig& config, const std::string& root_path) {
+	return new EchoHandler();
 }
 
-
-bool EchoHandler::process()
-{
-	if ( 
-		req_->is_valid_syntax()
-		&& req_->get_method() == "GET"
-		&& req_->get_version() == "HTTP/1.1"
-	) {
-		build_response();
-		return true;
+std::unique_ptr<Reply> EchoHandler::HandleRequest(const Request& request) {
+	if (!request.is_valid()) {
+		return std::unique_ptr<Reply>(nullptr);
 	}
-	else resp_->invalidate();
-	
-	return false;
-}
 
-bool EchoHandler::build_response()
-{
-	resp_->set_version(req_->get_version());
-	resp_->set_status(200);
+	ReplyArgs args;
+	if (request.get_method() != "GET") {
+		return std::unique_ptr<Reply>(nullptr);
+	}
+
 	std::pair<std::string, std::string> header = std::make_pair("Content-type", "text/plain");
-	resp_->add_header(header);
-	resp_->set_body(req_->get_raw());
-	return true;
+	args.headers.push_back(header);
+
+	args.body = request.get_raw();
+
+	return std::unique_ptr<Reply>(new Reply(args));
+	
 }

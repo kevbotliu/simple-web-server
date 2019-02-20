@@ -41,10 +41,10 @@ add_library(config_parser_lib src/config_parser.cc)
 
 # Helper Libraries
 add_library(request_lib src/request.cc)
-add_library(response_lib src/response.cc)
+add_library(reply_lib src/reply.cc)
 
-add_library(handler_config_lib src/handler_config.cc)
-add_library(handler_config_builder_lib src/handler_config_builder.cc)
+add_library(handler_factory_lib src/handler_factory.cc)
+add_library(dispatcher_lib src/dispatcher.cc)
 
 add_library(echo_handler_lib src/echo_handler.cc)
 add_library(static_handler_lib src/static_handler.cc)
@@ -54,13 +54,14 @@ target_link_libraries(logger_lib Boost::log_setup Boost::log)
 
 # Link libraries
 add_executable(main src/main.cc)
-target_link_libraries(main
+target_link_libraries(
+	main
 	server_lib
 	session_lib
 	request_lib
-	response_lib
-	handler_config_lib
-	handler_config_builder_lib
+	reply_lib
+	handler_factory_lib
+	dispatcher_lib
 	echo_handler_lib
 	static_handler_lib
 	config_parser_lib
@@ -74,21 +75,21 @@ target_link_libraries(config_parser config_parser_lib)
 add_executable(config_parser_test tests/config_parser_test.cc)
 target_link_libraries(config_parser_test config_parser_lib gtest_main)
 
-add_executable(request_test tests/request_test.cc)
-target_link_libraries(request_test request_lib gtest_main Boost::system)
+# add_executable(request_test tests/request_test.cc)
+# target_link_libraries(request_test request_lib gtest_main Boost::system)
 
-add_executable(response_test tests/response_test.cc)
-target_link_libraries(response_test response_lib gtest_main Boost::system)
+# add_executable(reply_test tests/reply_test.cc)
+# target_link_libraries(reply_test reply_lib gtest_main Boost::system)
 
 # add_executable(echo_handler_test tests/echo_handler_test.cc)
-# target_link_libraries(echo_handler_test request_lib response_lib request_handler_lib gtest_main Boost::system)
+# target_link_libraries(echo_handler_test request_lib reply_lib request_handler_lib gtest_main Boost::system)
 
-add_test(integration_test, ../tests/IntegrationTest [WORKING_DIRECTORY ../tests])
+# add_test(integration_test, ../tests/IntegrationTest [WORKING_DIRECTORY ../tests])
 
 # TODO(!): Update with test binary
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-gtest_discover_tests(response_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+# gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+# gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 # gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # TODO(!): Add library under TARGETS and TESTS and lib_test to generate_coverage_report
@@ -100,14 +101,14 @@ generate_coverage_report(
 		session_lib
 		config_parser_lib
 		request_lib
-		response_lib
-		handler_config_lib
-		handler_config_builder_lib
+		reply_lib
+		handler_factory_lib
+		dispatcher_lib
 		echo_handler_lib
 		static_handler_lib
 	TESTS
 		config_parser_test
-		request_test
-		response_test
+		# request_test
+		# reply_test
 		# echo_handler_test
 )

@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 
+#include "handler_factory.h"
+
 void shutdown_handler(
     const boost::system::error_code& error,
     int signal_number)
@@ -28,9 +30,7 @@ int main(int argc, char* argv[])
     {
       log.log("Main: Usage: server <config_file>", boost::log::trivial::error);
       return 1;
-    }
-
-    std::string config_file = argv[1];    
+    } 
 
     boost::asio::io_service io_service;
     log.log("Main: Starting Server...", boost::log::trivial::info);
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     std::string message = "Main: Setting up Server on Port " + std::to_string(parser.getPort()) + "...";
     log.log(message, boost::log::trivial::info);
 
-    server s(io_service, parser.getPort(), config_file);
+    server s(io_service, config, parser.getPort());
 
     // Construct a signal set registered for process termination.
     boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);

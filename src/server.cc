@@ -1,29 +1,18 @@
 #include "server.h"
 
-#include "handler_config_builder.h"
-
-server::server(boost::asio::io_service& io_service, short port, std::string config_file)
+server::server(boost::asio::io_service& io_service, NginxConfig& config, short port)
     : io_service_(io_service),
       acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
+      dispatcher_(Dispatcher::create(config)),
       log()
   {
-    init_config(config_file);
     start_accept();
   }
-
-void server::init_config(std::string config_file) {
-  config_ = HandlerConfigBuilder()
-    .set_config(config_file)
-    .register_handler("EchoHandler")
-    .register_handler("StaticHandler")
-    .build();
-  if (!config_->extract()) exit(1);
-}
 
 void server::start_accept()
   {
     log.log("Server: Starting Acceptor...", boost::log::trivial::info);
-    session* new_session = new session(io_service_, config_);
+    session* new_session = new session(io_service_, dispatcher_);
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
           boost::asio::placeholders::error));

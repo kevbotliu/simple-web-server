@@ -5,29 +5,29 @@
 #include <utility>
 #include <string>
 
-class Request
-{
+class Request {
 public:
 	Request(std::string request_str);
 
-	bool is_valid_syntax();
+	std::string get_raw() const;
 
-	std::string get_method();
-	std::string get_path();
-	std::string get_version();
-	std::vector<std::pair<std::string, std::string>> get_headers();
-	std::string get_body();
-	std::string get_raw();
-
+	std::string get_method() const;
+	std::string get_path() const;
+	std::string get_version() const;
+	std::vector<std::pair<std::string, std::string>> get_headers() const;
+	std::string get_body() const;
+	
+	bool is_valid() const;
 private:
 	bool parse();
-
-	bool valid_;
 	std::string raw_;
+	
 	std::string method_;
 	std::string path_;
 	std::string version_;
 	std::vector<std::pair<std::string, std::string>> headers_;
 	std::string body_;
+
+	bool valid_;
 };
 #endif

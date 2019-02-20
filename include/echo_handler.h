@@ -3,13 +3,11 @@
 
 #include "request_handler.h"
 
-class EchoHandler : public RequestHandler
-{
+class EchoHandler : public RequestHandler {
 public:
-	EchoHandler(Request *req, Response *resp);
-
-	bool process() override;
-	bool build_response() override;
-
+	static RequestHandler* create(const NginxConfig& config, const std::string& root_path);
+	std::unique_ptr<Reply> HandleRequest(const Request& request) override;
+private:
+	EchoHandler() {}
 };
 #endif

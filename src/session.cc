@@ -1,14 +1,11 @@
 #include "session.h"
-#include "request_handler.h"
-#include "echo_handler.h"
-#include "static_handler.h"
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <iostream>
 
-session::session(boost::asio::io_service& io_service, HandlerConfig* config)
+session::session(boost::asio::io_service& io_service, Dispatcher* dispatcher)
     : socket_(io_service),
-      config_(config),
+      dispatcher_(dispatcher),
       log()
   {
   }
@@ -32,27 +29,25 @@ void session::handle_read(const boost::system::error_code& error,
     if (!error)
     { 
       std::string s = data_;
-      Request *req = new Request(s.substr(0, bytes_transferred));
-      Response *resp = new Response();
+      std::string request_str = s.substr(0, bytes_transferred);
 
-      bool success = run_handler(req, resp);
-      std::string output;
+      Request req = Request(request_str);
+      std::unique_ptr<RequestHandler> handler = dispatcher_->dispatch(req);
 
-      if (success) output = resp->to_string();
-      else output = "";
+      std::unique_ptr<Reply> rep;
+      if (!handler) std::cout << "No suitable handler found\n";
+      else rep = handler->HandleRequest(req);
+
+      std::string reply_str = "";  
+      if (!rep) std::cout << "Failed creating reply object\n";
+      else reply_str = rep->to_string();
 
       boost::asio::async_write(socket_,
-          boost::asio::buffer(output, output.length()),
+          boost::asio::buffer(reply_str, reply_str.length()),
           boost::bind(&session::handle_write, this,
             boost::asio::placeholders::error));
-
-      delete req;
-      delete resp;
     }
-    else
-    {
-      delete this;
-    }
+    else delete this;
   }
 
 void session::handle_write(const boost::system::error_code& error)
@@ -71,35 +66,3 @@ void session::handle_write(const boost::system::error_code& error)
     // }
   }
 
-bool session::run_handler(Request *req, Response *resp) {
-  std::string req_path = req->get_path();
-
-  std::string ip_addr = socket().remote_endpoint().address().to_string();
-
-  for (Handler handler : config_->handlers_) {
-    for (std::string path : handler.paths) {
-
-      if (req_path.substr(0, path.size()) == path) {
-        std::string message = "Session: IP: " + ip_addr + ": Entered " + handler.name + ".";
-        log.log(message, boost::log::trivial::info);
-
-        // REQUEST HANDLERS
-        if (handler.name == "EchoHandler") {
-          EchoHandler req_handler(req, resp);
-          return req_handler.succeeded();
-        }
-        if (handler.name == "StaticHandler") {
-          StaticHandler req_handler(req, resp, handler.root_dir);
-          return req_handler.succeeded();
-        }
-        
-      }
-    }
-  }
-  std::string message = "Session: IP: " + ip_addr + ": Entered Default Handler (EchoHandler).";
-  log.log(message, boost::log::trivial::info);
-
-  EchoHandler handler(req, resp);
-  return handler.succeeded();
-
-}
