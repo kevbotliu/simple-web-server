@@ -4,7 +4,11 @@
 
 Reply::Reply(ReplyArgs args) 
 	: valid_(true) {
-	version_ = args.HTTP_version;
+	if (args.HTTP_version.size() < 6 || args.HTTP_version.substr(0,5) != "HTTP/") {
+		std::cout << "Invalid HTTP version syntax" << std::endl;
+		valid_ = false;
+	}
+	else version_ = args.HTTP_version;
 
 	if (status_msgs.find(args.status_code) == status_msgs.end()) {
 		std::cout << "Invalid status code set" << std::endl;

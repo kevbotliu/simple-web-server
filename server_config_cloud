@@ -1,13 +1,12 @@
 listen 80;
 
-root /usr/src/projects/
+root /usr/src/projects/;
 
 handler static {
-	location /static
-	root static_src
-	log warn static.log
+	location /static;
+	root static_src;
 }
 
 handler echo {
-	location /echo
+	location /echo;
 }

@@ -18,6 +18,8 @@ void Dispatcher::extract() {
 	// log.log("Server: Initializing Handlers...", boost::log::trivial::info);
 
 	for (const auto& statement : config_.statements_) {
+		if (statement->tokens_[0] == "#") continue;
+
 		if (statement->tokens_[0] == "handler" && 
 			statement->tokens_.size() == 2 &&
 			statement->child_block_ != nullptr) {

@@ -75,11 +75,14 @@ target_link_libraries(config_parser config_parser_lib)
 add_executable(config_parser_test tests/config_parser_test.cc)
 target_link_libraries(config_parser_test config_parser_lib gtest_main)
 
-# add_executable(request_test tests/request_test.cc)
-# target_link_libraries(request_test request_lib gtest_main Boost::system)
+add_executable(request_test tests/request_test.cc)
+target_link_libraries(request_test request_lib gtest_main Boost::system)
 
-# add_executable(reply_test tests/reply_test.cc)
-# target_link_libraries(reply_test reply_lib gtest_main Boost::system)
+add_executable(reply_test tests/reply_test.cc)
+target_link_libraries(reply_test reply_lib gtest_main Boost::system)
+
+# add_executable(dispatcher_test tests/dispatcher_test.cc)
+# target_link_libraries(dispatcher_test dispatcher_lib gtest_main Boost::system)
 
 # add_executable(echo_handler_test tests/echo_handler_test.cc)
 # target_link_libraries(echo_handler_test request_lib reply_lib request_handler_lib gtest_main Boost::system)
@@ -88,8 +91,9 @@ target_link_libraries(config_parser_test config_parser_lib gtest_main)
 
 # TODO(!): Update with test binary
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-# gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-# gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+# gtest_discover_tests(dispatcher_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 # gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # TODO(!): Add library under TARGETS and TESTS and lib_test to generate_coverage_report
@@ -108,7 +112,8 @@ generate_coverage_report(
 		static_handler_lib
 	TESTS
 		config_parser_test
-		# request_test
-		# reply_test
+		request_test
+		reply_test
+		# dispatcher_test
 		# echo_handler_test
 )

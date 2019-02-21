@@ -5,7 +5,6 @@ root /usr/src/projects/;
 handler static {
 	location /static;
 	root static_src;
-	log warn static.log;
 }
 
 handler echo {
