@@ -79,7 +79,8 @@ std::string StaticHandler::findFullPath(std::string path) {
 	//TODO: configure the home directory
 	// std::cerr << "/usr/src/project/" + root_path_ + path.substr(7);
 	// return "/usr/src/project/" + root_path_ + path.substr(7);
-	return "/usr/src/projects/bbk-simple-echo-server/" + root_path_ + path.substr(7);
+	// return "/usr/src/projects/bbk-simple-echo-server/" + root_path_ + path.substr(7);
+	return "../" + root_path_ + path.substr(7);
 	
 }
 
