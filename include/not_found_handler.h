@@ -10,5 +10,6 @@ public:
 
 private:
 	NotFoundHandler() {};
+	ReplyArgs build_response(const Request& request);
 };
 #endif
