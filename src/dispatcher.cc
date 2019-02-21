@@ -1,5 +1,6 @@
 #include "dispatcher.h"	
 #include "logger.h"
+#include "shared.h"
 #include <iostream>
 
 // Refuses to build without this??
@@ -37,7 +38,7 @@ void Dispatcher::extract() {
 					block.root_path = child_statement->tokens_[1];
 				}
 			}
-			handler_blocks.push_back(block);
+			HandlerInfo::handler_blocks.push_back(block);
 		}
 	}
 }
@@ -54,7 +55,7 @@ void Dispatcher::extract() {
 // In the event of two handlers being registered to the same location, the first one 
 // registered in the config takes priority
 std::unique_ptr<RequestHandler> Dispatcher::dispatch(Request& req) {
-	for (auto handler : handler_blocks) {
+	for (auto handler : HandlerInfo::handler_blocks) {
 		if (req.get_path().find(handler.path) != std::string::npos) {
 		    return factory_.createByName(handler.name, config_, handler.root_path);
 		}

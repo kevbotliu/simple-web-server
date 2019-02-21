@@ -1,4 +1,5 @@
 #include "session.h"
+#include "shared.h"
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <iostream>
@@ -41,6 +42,8 @@ void session::handle_read(const boost::system::error_code& error,
       std::string reply_str = "";  
       if (!rep) std::cout << "Failed creating reply object\n";
       else reply_str = rep->to_string();
+
+      RequestHistory::history.push_back(std::make_pair(req.get_path(), rep->get_status_code()));
 
       boost::asio::async_write(socket_,
           boost::asio::buffer(reply_str, reply_str.length()),

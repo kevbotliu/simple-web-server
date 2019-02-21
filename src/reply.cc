@@ -20,6 +20,8 @@ Reply::Reply(ReplyArgs args)
 	body_ = args.body;
 }
 
+int Reply::get_status_code() {return status_;}
+
 std::string Reply::to_string() {
 	if (!valid_) return "";
 

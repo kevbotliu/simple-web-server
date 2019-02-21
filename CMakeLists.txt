@@ -38,19 +38,19 @@ include_directories(include)
 add_library(server_lib src/server.cc)
 add_library(session_lib src/session.cc)
 add_library(config_parser_lib src/config_parser.cc)
-
-# Helper Libraries
 add_library(request_lib src/request.cc)
 add_library(reply_lib src/reply.cc)
-
 add_library(handler_factory_lib src/handler_factory.cc)
 add_library(dispatcher_lib src/dispatcher.cc)
 
 add_library(echo_handler_lib src/echo_handler.cc)
 add_library(static_handler_lib src/static_handler.cc)
+add_library(status_handler_lib src/status_handler.cc)
 
 add_library(logger_lib src/logger.cc)
 target_link_libraries(logger_lib Boost::log_setup Boost::log)
+
+add_library(shared_lib src/shared.cc)
 
 # Link libraries
 add_executable(main src/main.cc)
@@ -64,9 +64,11 @@ target_link_libraries(
 	dispatcher_lib
 	echo_handler_lib
 	static_handler_lib
+	status_handler_lib
 	config_parser_lib
 	Boost::system
 	logger_lib
+	shared_lib
 )
 add_executable(config_parser src/config_parser_main.cc)
 target_link_libraries(config_parser config_parser_lib)
@@ -110,6 +112,8 @@ generate_coverage_report(
 		dispatcher_lib
 		echo_handler_lib
 		static_handler_lib
+		status_handler_lib
+		shared_lib
 	TESTS
 		config_parser_test
 		request_test

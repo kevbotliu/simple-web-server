@@ -6,6 +6,7 @@ server::server(boost::asio::io_service& io_service, NginxConfig& config, short p
       dispatcher_(Dispatcher::create(config)),
       log()
   {
+
     start_accept();
   }
 

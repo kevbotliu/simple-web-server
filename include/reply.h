@@ -23,6 +23,7 @@ class Reply {
 public:
 	Reply(ReplyArgs args);
 
+	int get_status_code();
 	std::string to_string();
 	bool is_valid();
 private:
