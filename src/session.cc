@@ -36,8 +36,7 @@ void session::handle_read(const boost::system::error_code& error,
       std::unique_ptr<RequestHandler> handler = dispatcher_->dispatch(req);
 
       std::unique_ptr<Reply> rep;
-      if (!handler) std::cout << "No suitable handler found\n";
-      else rep = handler->HandleRequest(req);
+      rep = handler->HandleRequest(req);
 
       std::string reply_str = "";  
       if (!rep) std::cout << "Failed creating reply object\n";

@@ -14,3 +14,7 @@ handler echo {
 handler status {
 	location /status;
 }
+
+handler 404 {
+	location /;
+}

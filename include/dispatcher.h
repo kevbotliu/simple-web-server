@@ -10,7 +10,7 @@ public:
 private:
 	Dispatcher(const NginxConfig& config) : config_(config) {}
 	void extract();
-
+	
 	NginxConfig config_;
 	HandlerFactory factory_;
 };
