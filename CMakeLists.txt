@@ -48,6 +48,7 @@ add_library(dispatcher_lib src/dispatcher.cc)
 
 add_library(echo_handler_lib src/echo_handler.cc)
 add_library(static_handler_lib src/static_handler.cc)
+add_library(not_found_handler_lib src/not_found_handler.cc)
 
 add_library(logger_lib src/logger.cc)
 target_link_libraries(logger_lib Boost::log_setup Boost::log)
@@ -64,6 +65,7 @@ target_link_libraries(
 	dispatcher_lib
 	echo_handler_lib
 	static_handler_lib
+	not_found_handler_lib
 	config_parser_lib
 	Boost::system
 	logger_lib
@@ -110,6 +112,7 @@ generate_coverage_report(
 		dispatcher_lib
 		echo_handler_lib
 		static_handler_lib
+		not_found_handler_lib
 	TESTS
 		config_parser_test
 		request_test
