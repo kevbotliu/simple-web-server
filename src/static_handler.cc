@@ -46,30 +46,22 @@ ReplyArgs StaticHandler::build_response(const Request& request)
 
 	std::string full_path = findFullPath(path);
 	std::ifstream f(full_path.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
-	if (f.is_open()) {
-		std::streampos mSize = f.tellg();
-		char* mBuffer = new char[mSize];
-		f.seekg(0, std::ios::beg);
-		f.read(mBuffer, mSize);
-		f.close();
+		
+	std::streampos mSize = f.tellg();
+	char* mBuffer = new char[mSize];
+	f.seekg(0, std::ios::beg);
+	f.read(mBuffer, mSize);
+	f.close();
 
-		// resp_->set_version(req_->get_version());
-		// resp_->set_status(200);
-		// std::pair<std::string, std::string> header = std::make_pair("Content-type", ext);
-		// resp_->add_header(header);
-		// resp_->set_body(std::string(mBuffer, mSize));
-		args.body = std::string(mBuffer, mSize);
-		delete mBuffer;
-		return args;
-	} else {
-		// resp_->set_version(req_->get_version());
-		// resp_->set_status(404);
-		// std::pair<std::string, std::string> header = std::make_pair("Content-type", "text/html");
-		// resp_->add_header(header);
-		args.body = std::string("404 Not Found");
-		std::cerr << "Could not open file.";
-		return args;
-	}
+	// resp_->set_version(req_->get_version());
+	// resp_->set_status(200);
+	// std::pair<std::string, std::string> header = std::make_pair("Content-type", ext);
+	// resp_->add_header(header);
+	// resp_->set_body(std::string(mBuffer, mSize));
+	args.body = std::string(mBuffer, mSize);
+	delete mBuffer;
+	return args;
+
 	return args;
 }
 
