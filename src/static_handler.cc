@@ -34,7 +34,9 @@ ReplyArgs StaticHandler::build_response(const Request& request)
 {
 	ReplyArgs args;
 	std::string path = request.get_path();
-	setExtension(path);
+	
+	Pathfinder pathfinder(path);
+
 
 	// resp_->set_version(req_->get_version());
 	// resp_->set_status(200);
@@ -44,7 +46,7 @@ ReplyArgs StaticHandler::build_response(const Request& request)
 	std::pair<std::string, std::string> header = std::make_pair("Content-type", ext);
 	args.headers.push_back(header);
 
-	std::string full_path = findFullPath(path);
+	std::string full_path = pathfinder.findFullPath(path, root_path_);
 	std::ifstream f(full_path.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
 		
 	std::streampos mSize = f.tellg();
@@ -61,33 +63,4 @@ ReplyArgs StaticHandler::build_response(const Request& request)
 	args.body = std::string(mBuffer, mSize);
 	delete mBuffer;
 	return args;
-
-	return args;
-}
-
-std::string StaticHandler::findFullPath(std::string path) {
-	///static/file.html means you want the 7th character on
-	//std::cerr << path.substr(7);
-	//TODO: configure the home directory
-	// std::cerr << "/usr/src/project/" + root_path_ + path.substr(7);
-	// return "/usr/src/project/" + root_path_ + path.substr(7);
-	// return "/usr/src/projects/bbk-simple-echo-server/" + root_path_ + path.substr(7);
-	return "../" + root_path_ + path.substr(7);
-	
-}
-
-void StaticHandler::setExtension(std::string path)
-{
-	int mIndex = path.find_last_of(".");
-	std::string mExtension = path.substr(mIndex + 1);
-
-	if (mExtension == "html") {
-		ext = "text/html";
-	} else if (mExtension == "jpg") {
-		ext = "image/jpeg";
-	} else if (mExtension == "zip") {
-		ext = "application/zip";
-	} else if (mExtension == "txt") {
-		ext = "text/plain";
-	}
 }

@@ -41,12 +41,17 @@ add_library(config_parser_lib src/config_parser.cc)
 add_library(request_lib src/request.cc)
 add_library(reply_lib src/reply.cc)
 add_library(handler_factory_lib src/handler_factory.cc)
-add_library(dispatcher_lib src/dispatcher.cc)
+add_library(pathfinder_lib src/pathfinder.cc)
 
 add_library(echo_handler_lib src/echo_handler.cc)
-add_library(static_handler_lib src/static_handler.cc)
 add_library(status_handler_lib src/status_handler.cc)
 add_library(not_found_handler_lib src/not_found_handler.cc)
+
+add_library(static_handler_lib src/static_handler.cc)
+target_link_libraries(static_handler_lib pathfinder_lib)
+
+add_library(dispatcher_lib src/dispatcher.cc)
+target_link_libraries(dispatcher_lib pathfinder_lib)
 
 add_library(logger_lib src/logger.cc)
 target_link_libraries(logger_lib Boost::log_setup Boost::log)
@@ -63,6 +68,7 @@ target_link_libraries(
 	reply_lib
 	handler_factory_lib
 	dispatcher_lib
+	pathfinder_lib
 	echo_handler_lib
 	static_handler_lib
 	status_handler_lib
@@ -112,6 +118,7 @@ generate_coverage_report(
 		reply_lib
 		handler_factory_lib
 		dispatcher_lib
+		pathfinder_lib
 		echo_handler_lib
 		static_handler_lib
 		status_handler_lib

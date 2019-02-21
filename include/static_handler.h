@@ -2,6 +2,7 @@
 #define STATIC_HANDLER_H
 
 #include "request_handler.h"
+#include "pathfinder.h"
 
 class StaticHandler : public RequestHandler {
 public:
@@ -13,8 +14,6 @@ private:
 	std::string ext;
 	StaticHandler(std::string root_path);
 
-	void setExtension(std::string path);
-	std::string findFullPath(std::string path);
 	ReplyArgs build_response(const Request& request);
 };
 #endif

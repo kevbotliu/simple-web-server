@@ -1,6 +1,7 @@
 #include "dispatcher.h"	
 #include "logger.h"
 #include "shared.h"
+#include "pathfinder.h"
 #include <iostream>
 
 // Refuses to build without this??
@@ -58,7 +59,10 @@ std::unique_ptr<RequestHandler> Dispatcher::dispatch(Request& req) {
 	for (auto handler : HandlerInfo::handler_blocks) {
 		if (req.get_path().find(handler.path) != std::string::npos) {
 		    // First check if the file exists.
-		    if (access(req.get_path().c_str(), F_OK) != -1) {
+		    Pathfinder p(req.get_path());
+		    std::string pathToCheck = p.findFullPath(req.get_path(), handler.root_path);
+
+		    if (access(pathToCheck.c_str(), F_OK) != -1) {
 			// If file exists, go to static handler.
 			return factory_.createByName(handler.name, config_, handler.root_path);
 		    }
