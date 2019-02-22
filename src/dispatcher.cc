@@ -43,17 +43,6 @@ void Dispatcher::extract() {
 	}
 }
 
-
-
-// TODO:
-// Config edge cases: 
-
-// In the event that locations for multiple handlers could match a request, 
-// the dispatcher should dispatch to the handler matching the most-specific (i.e. longest) 
-// configured location. Hint: check handler location matches in order of descending length
-
-// In the event of two handlers being registered to the same location, the first one 
-// registered in the config takes priority
 std::unique_ptr<RequestHandler> Dispatcher::dispatch(Request& req) {
 	for (auto handler : HandlerInfo::handler_blocks) {
 		if (req.get_path().find(handler.path) != std::string::npos) {
