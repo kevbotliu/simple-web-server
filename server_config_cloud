@@ -12,5 +12,5 @@ handler echo {
 }
 
 handler status {
-	location /status
+	location /status;
 }
