@@ -25,6 +25,7 @@ public:
 
 	int get_status_code();
 	std::string to_string();
+	std::string get_body();
 	bool is_valid();
 private:
 	std::string version_;

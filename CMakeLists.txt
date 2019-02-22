@@ -97,6 +97,9 @@ target_link_libraries(reply_test reply_lib gtest_main Boost::system)
 # add_executable(echo_handler_test tests/echo_handler_test.cc)
 # target_link_libraries(echo_handler_test request_lib reply_lib request_handler_lib gtest_main Boost::system)
 
+add_executable(static_handler_test tests/static_handler_test.cc)
+target_link_libraries(static_handler_test request_lib reply_lib static_handler_lib gtest_main Boost::system)
+
 # add_test(integration_test, ../tests/IntegrationTest [WORKING_DIRECTORY ../tests])
 
 # TODO(!): Update with test binary
@@ -105,6 +108,8 @@ gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 # gtest_discover_tests(dispatcher_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 # gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
 
 # TODO(!): Add library under TARGETS and TESTS and lib_test to generate_coverage_report
 include(cmake/CodeCoverageReportConfig.cmake)
@@ -128,6 +133,7 @@ generate_coverage_report(
 		config_parser_test
 		request_test
 		reply_test
+		static_handler_test
 		# dispatcher_test
 		# echo_handler_test
 )

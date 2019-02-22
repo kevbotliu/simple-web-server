@@ -33,4 +33,10 @@ std::string Reply::to_string() {
 	return status_line + header_lines + "\r\n" + body_;
 }
 
+std::string Reply::get_body() {
+	if (!valid_) return "";
+
+	return body_;
+}
+
 bool Reply::is_valid() { return valid_; }
