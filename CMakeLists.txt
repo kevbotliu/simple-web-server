@@ -94,8 +94,8 @@ target_link_libraries(reply_test reply_lib gtest_main Boost::system)
 # add_executable(dispatcher_test tests/dispatcher_test.cc)
 # target_link_libraries(dispatcher_test dispatcher_lib gtest_main Boost::system)
 
-# add_executable(echo_handler_test tests/echo_handler_test.cc)
-# target_link_libraries(echo_handler_test request_lib reply_lib request_handler_lib gtest_main Boost::system)
+add_executable(echo_handler_test tests/echo_handler_test.cc)
+target_link_libraries(echo_handler_test request_lib reply_lib echo_handler_lib gtest_main Boost::system)
 
 add_executable(static_handler_test tests/static_handler_test.cc)
 target_link_libraries(static_handler_test request_lib reply_lib static_handler_lib gtest_main Boost::system)
@@ -107,7 +107,7 @@ gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE
 gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 # gtest_discover_tests(dispatcher_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-# gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 
@@ -135,5 +135,5 @@ generate_coverage_report(
 		reply_test
 		static_handler_test
 		# dispatcher_test
-		# echo_handler_test
+		echo_handler_test
 )

@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "echo_handler.h"
 #include "request.h"
-#include "response.h"
+#include "reply.h"
 
 class EchoHandlerTest : public ::testing::Test {
   protected:
@@ -11,72 +11,32 @@ class EchoHandlerTest : public ::testing::Test {
     bool success;
 };
 
-TEST_F(EchoHandlerTest, CorrectRequestTest) {
+TEST_F(EchoHandlerTest, ValidResponseTest) {
     success = true;
-    std::string s = "GET / HTTP/1.1\r\n\r\n";
-    Request *req = new Request(s);
-    Response *resp = new Response();
-    EchoHandler handler(req, resp);
-    success = handler.succeeded();
+    std::string s = "GET /echo HTTP/1.1\r\n\r\n";
+    const Request *req = new Request(s);
+    NginxConfig config;
+    std::string root_path = "echo";
+    success = EchoHandler::create(config, root_path)->HandleRequest(*req)->is_valid();
     EXPECT_TRUE(success);
 }
 
-TEST_F(EchoHandlerTest, HTTP1Test) {
+TEST_F(EchoHandlerTest, StatusCodeResponseTest) {
     success = true;
-    std::string s = "GET / HTTP/1.0\r\n\r\n";
-    Request *req = new Request(s);
-    Response *resp = new Response();
-    EchoHandler handler(req, resp);
-    success = handler.succeeded();
-    EXPECT_FALSE(success);
+    std::string s = "GET /echo HTTP/1.1\r\n\r\n";
+    const Request *req = new Request(s);
+    NginxConfig config;
+    std::string root_path = "echo";
+    success = (EchoHandler::create(config, root_path)->HandleRequest(*req)->get_status_code()==200);
+    EXPECT_TRUE(success);
 }
 
-TEST_F(EchoHandlerTest, PostTest) {
+TEST_F(EchoHandlerTest, CorrectResponseTest) {
     success = true;
-    std::string s = "POST / HTTP/1.1\r\n\r\n";
-    Request *req = new Request(s);
-    Response *resp = new Response();
-    EchoHandler handler(req, resp);
-    success = handler.succeeded();
-    EXPECT_FALSE(success);
-}
-
-TEST_F(EchoHandlerTest, NoNewLinesTest) {
-    success = true;
-    std::string s = "GET / HTTP/1.1";
-    Request *req = new Request(s);
-    Response *resp = new Response();
-    EchoHandler handler(req, resp);
-    success = handler.succeeded();
-    EXPECT_FALSE(success);
-}
-
-TEST_F(EchoHandlerTest, BadSyntaxTest) {
-    success = true;
-    std::string s = "randomString";
-    Request *req = new Request(s);
-    Response *resp = new Response();
-    EchoHandler handler(req, resp);
-    success = handler.succeeded();
-    EXPECT_FALSE(success);
-}
-
-TEST_F(EchoHandlerTest, EmptyTest) {
-    success = true;
-    std::string s = "";
-    Request *req = new Request(s);
-    Response *resp = new Response();
-    EchoHandler handler(req, resp);
-    success = handler.succeeded();
-    EXPECT_FALSE(success);
-}
-
-TEST_F(EchoHandlerTest, JustNewLinesTest) {
-    success = true;
-    std::string s = "\r\n\r\n";
-    Request *req = new Request(s);
-    Response *resp = new Response();
-    EchoHandler handler(req, resp);
-    success = handler.succeeded();
-    EXPECT_FALSE(success);
+    std::string s = "GET /echo HTTP/1.1\r\n\r\n";
+    const Request *req = new Request(s);
+    NginxConfig config;
+    std::string root_path = "echo";
+    success = (EchoHandler::create(config, root_path)->HandleRequest(*req)->get_body().substr(0, 18)=="GET /echo HTTP/1.1");
+    EXPECT_TRUE(success);
 }
