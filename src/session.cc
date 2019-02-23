@@ -33,16 +33,17 @@ void session::handle_read(const boost::system::error_code& error,
       std::string request_str = s.substr(0, bytes_transferred);
 
       Request req = Request(request_str);
-      std::unique_ptr<RequestHandler> handler = dispatcher_->dispatch(req);
+      std::string reply_str = "";
+      if (req.is_valid()) {
+        std::unique_ptr<RequestHandler> handler = dispatcher_->dispatch(req);
 
-      std::unique_ptr<Reply> rep;
-      rep = handler->HandleRequest(req);
+        std::unique_ptr<Reply> rep;
+        rep = handler->HandleRequest(req);
+        reply_str = rep->to_string();
 
-      std::string reply_str = "";  
-      if (!rep) std::cout << "Failed creating reply object\n";
-      else reply_str = rep->to_string();
-
-      RequestHistory::history.push_back(std::make_pair(req.get_path(), rep->get_status_code()));
+        RequestHistory::history.push_back(std::make_pair(req.get_path(), rep->get_status_code()));
+      }
+      else std::cerr << "Malformed request received.\n";
 
       boost::asio::async_write(socket_,
           boost::asio::buffer(reply_str, reply_str.length()),

@@ -45,6 +45,7 @@ void Dispatcher::extract() {
 
 std::unique_ptr<RequestHandler> Dispatcher::dispatch(Request& req) {
 	for (auto handler : HandlerInfo::handler_blocks) {
+		// All paths will go into factory if 404 handler is registered
 		if (req.get_path().find(handler.path) != std::string::npos) {
 			return factory_.createByName(handler.name, config_, handler.root_path);
 		}

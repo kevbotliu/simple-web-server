@@ -11,7 +11,6 @@ std::unique_ptr<RequestHandler> HandlerFactory::createByName(const std::string& 
     if (name == "status") return std::unique_ptr<RequestHandler>(StatusHandler::create(config, root_path));
     
     return std::unique_ptr<RequestHandler>(NotFoundHandler::create(config, root_path));
-    // return std::unique_ptr<RequestHandler>(nullptr);
 }
 
 

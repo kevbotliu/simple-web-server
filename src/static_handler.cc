@@ -67,6 +67,7 @@ ReplyArgs StaticHandler::build_response(const Request& request)
 	}
 	else {
 		args.status_code = 404;
+		args.body = "404 Not Found";
 	}
 	
 	return args;
