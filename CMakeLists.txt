@@ -46,6 +46,7 @@ add_library(pathfinder_lib src/pathfinder.cc)
 add_library(echo_handler_lib src/echo_handler.cc)
 add_library(status_handler_lib src/status_handler.cc)
 add_library(not_found_handler_lib src/not_found_handler.cc)
+add_library(proxy_handler src/proxy_handler.cc)
 
 add_library(static_handler_lib src/static_handler.cc)
 target_link_libraries(static_handler_lib pathfinder_lib)
@@ -73,6 +74,7 @@ target_link_libraries(
 	static_handler_lib
 	status_handler_lib
 	not_found_handler_lib
+	proxy_handler
 	config_parser_lib
 	Boost::system
 	logger_lib
@@ -99,6 +101,8 @@ target_link_libraries(echo_handler_test request_lib reply_lib echo_handler_lib g
 
 add_executable(static_handler_test tests/static_handler_test.cc)
 target_link_libraries(static_handler_test request_lib reply_lib static_handler_lib gtest_main Boost::system)
+
+# TODO(!): add tests for proxy_handler
 
 # add_test(integration_test, ../tests/IntegrationTest [WORKING_DIRECTORY ../tests])
 
