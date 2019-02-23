@@ -131,6 +131,7 @@ generate_coverage_report(
 		echo_handler_lib
 		static_handler_lib
 		status_handler_lib
+		proxy_handler
 		shared_lib
 		not_found_handler_lib
 	TESTS

@@ -15,6 +15,12 @@ handler status {
 	location /status;
 }
 
+handler ucla {
+	location /ucla;
+	remote_url http://www.ucla.edu;
+	remote_port 80;
+}
+
 handler 404 {
 	location /;
 }

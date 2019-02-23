@@ -37,6 +37,17 @@ void Dispatcher::extract() {
 					child_statement->tokens_[0] == "root") {
 					block.root_path = child_statement->tokens_[1];
 				}
+
+				// TODO : should put this in config to create a getAttribute() fn?
+				if (child_statement->tokens_.size() == 3 &&
+					child_statement->tokens_[0] == "remote_url") {
+					block.remote_url = child_statement->tokens_[1];
+				}
+
+				if (child_statement->tokens_.size() == 3 &&
+					child_statement->tokens_[0] == "remote_port") {
+					block.remote_port = child_statement->tokens_[1];
+				}
 			}
 			HandlerInfo::handler_blocks.push_back(block);
 		}
@@ -47,6 +58,7 @@ std::unique_ptr<RequestHandler> Dispatcher::dispatch(Request& req) {
 	for (auto handler : HandlerInfo::handler_blocks) {
 		// All paths will go into factory if 404 handler is registered
 		if (req.get_path().find(handler.path) != std::string::npos) {
+			std::cout << "Creating handler: " << handler.name << " Path: " << handler.path << std::endl;
 			return factory_.createByName(handler.name, config_, handler.root_path);
 		}
 	}

@@ -33,7 +33,7 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	tcp::resolver resolver(io_service);
 
 	// set up query
-	tcp::resolver::query query("host_url", "remote_port");
+	tcp::resolver::query query("www.ucla.edu", "http", boost::asio::ip::resolver_query_base::numeric_service);
 	tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
 	tcp::resolver::iterator iter = endpoint_iterator;
@@ -51,10 +51,11 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 
 	std::string request_str = "GET " + request.get_path() + " HTTP/1.1\r\n";
 	
-	request_str += std::string("Host: ") + "host_url";
+	request_str += std::string("Host: ") + "host_url\r\n";
 	request_str += std::string("Connection: keep-alive\r\n");
 	request_str += std::string("Accept: */*\r\n");
 	request_str += std::string("Connection: close\r\n\r\n");
+	std::cout << request_str << std::endl;
 
 	// send out built request
 	socket.write_some(boost::asio::buffer(request_str, request_str.size()));
