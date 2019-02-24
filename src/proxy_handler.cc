@@ -1,4 +1,5 @@
 #include "proxy_handler.h"
+#include "shared.h"
 
 #include <boost/asio.hpp>
 #include <boost/log/core.hpp>
@@ -17,6 +18,7 @@
 using boost::asio::ip::tcp;
 
 RequestHandler* ProxyHandler::create(const NginxConfig& config, const std::string& root_path) {
+	// TODO: would like config to have method: getAttribute("remote_url") and "remote_port"
 	return new ProxyHandler();
 }
 
@@ -24,6 +26,8 @@ RequestHandler* ProxyHandler::create(const NginxConfig& config, const std::strin
 std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	/*
 		Author: Konner Macias
+
+		Checks for valid
 	*/
 	if (!request.is_valid()) return std::unique_ptr<Reply>(nullptr);
 	if (request.get_method() != "GET") return std::unique_ptr<Reply>(nullptr);
@@ -32,8 +36,16 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	boost::asio::io_service io_service;
 	tcp::resolver resolver(io_service);
 
-	// set up query
-	tcp::resolver::query query("www.ucla.edu", "http", boost::asio::ip::resolver_query_base::numeric_service);
+	// TODO: this is getting a HOST NOT FOUND (authoritative) error
+
+	// obtains pair (remote_url, remote_port)
+	std::pair<std::string,std::string> remote_pair = get_remote_info();
+	std::string host = remote_pair.first, port = remote_pair.second;
+	
+	// send out query
+	std::cout << "Host: " << host << " Port: " << port << std::endl;
+	tcp::resolver::query query(host, port, boost::asio::ip::resolver_query_base::numeric_service);
+	
 	tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
 	tcp::resolver::iterator iter = endpoint_iterator;
@@ -44,14 +56,14 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 		tcp::endpoint endpoint = *iter++;
 		std::cout << endpoint << std::endl;
 	}
-
+	
 	// get session/connection
 	tcp::socket socket(io_service);
 	boost::asio::connect(socket, endpoint_iterator);
 
+	// build request string
 	std::string request_str = "GET " + request.get_path() + " HTTP/1.1\r\n";
-	
-	request_str += std::string("Host: ") + "host_url\r\n";
+	request_str += std::string("Host: ") + host + "\r\n";
 	request_str += std::string("Connection: keep-alive\r\n");
 	request_str += std::string("Accept: */*\r\n");
 	request_str += std::string("Connection: close\r\n\r\n");
@@ -60,10 +72,7 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	// send out built request
 	socket.write_some(boost::asio::buffer(request_str, request_str.size()));
 
-	// get corresponding response
-	std::string returned_response;
-
-	// read in data
+	// read in response data
 	boost::array<char, 2048> buffy;
 	boost::system::error_code error;
 	size_t len_data = socket.read_some(boost::asio::buffer(buffy), error);
@@ -72,10 +81,11 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	if (error == boost::asio::error::eof) {
 		BOOST_LOG_TRIVIAL(trace) << "EOF reached!";
 		// HEY: do I throw a nullptr here?
-		// return std::unique_ptr<Reply>(nullptr);
+		return std::unique_ptr<Reply>(nullptr);
 	}
 
 	// assign response string to incoming data
+	std::string returned_response;
 	returned_response += std::string(buffy.data(), len_data);
 
 	// define a function to check for invalid response (use if switch to - vars)
@@ -104,6 +114,7 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	return std::unique_ptr<Reply>(new Reply(args));
 }
 
+
 std::pair<bool,std::string> ProxyHandler::parse_returned_response(std::string response) {
 	/*
 		Author: Konner Macias
@@ -129,7 +140,15 @@ std::pair<bool,std::string> ProxyHandler::parse_returned_response(std::string re
 	return std::pair<bool,std::string> (true, response_body);
 }
 
-
-
-
-	
+std::pair<std::string,std::string> ProxyHandler::get_remote_info() {
+	/*
+		Author: Konner Macias
+		
+		Gathers corresponding remote url and remote port for redirect
+	*/
+	for (auto handler : HandlerInfo::handler_blocks) {
+		if (handler.name == "ucla") {
+			return std::pair<std::string,std::string> (handler.remote_url, handler.remote_port);
+		}
+	}
+}

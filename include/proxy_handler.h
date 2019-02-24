@@ -9,6 +9,7 @@ public:
 	std::unique_ptr<Reply> HandleRequest(const Request& request) override;
 private:
 	std::pair<bool,std::string> parse_returned_response(std::string response);
+	std::pair<std::string,std::string> get_remote_info();
 	ProxyHandler() {}    //TODO: Perhaps need more variables to hold config stuff for the proxy
 
 };

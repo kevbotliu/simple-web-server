@@ -38,13 +38,12 @@ void Dispatcher::extract() {
 					block.root_path = child_statement->tokens_[1];
 				}
 
-				// TODO : should put this in config to create a getAttribute() fn?
-				if (child_statement->tokens_.size() == 3 &&
+				if (child_statement->tokens_.size() == 2 &&
 					child_statement->tokens_[0] == "remote_url") {
 					block.remote_url = child_statement->tokens_[1];
 				}
 
-				if (child_statement->tokens_.size() == 3 &&
+				if (child_statement->tokens_.size() == 2 &&
 					child_statement->tokens_[0] == "remote_port") {
 					block.remote_port = child_statement->tokens_[1];
 				}
