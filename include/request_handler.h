@@ -8,9 +8,6 @@
 
 class RequestHandler {
 public:
-	virtual std::unique_ptr<Reply> HandleRequest(const Request& request) = 0;
-protected:
-	NginxConfig config;
-	std::string root_path_;
+	virtual std::unique_ptr<Reply> HandleRequest(const Request& request) = 0;	
 };
 #endif

@@ -2,7 +2,7 @@
 #include "shared.h"
 
 RequestHandler* StatusHandler::create(const NginxConfig& config, const std::string& root_path) {
-	return new StatusHandler();
+	return new StatusHandler(config);
 }
 
 std::unique_ptr<Reply> StatusHandler::HandleRequest(const Request& request) {
@@ -18,7 +18,7 @@ std::unique_ptr<Reply> StatusHandler::HandleRequest(const Request& request) {
 	}
 	args.body += "\n";
 	args.body += "Request handlers registered:\n";
-	for (auto handler : HandlerInfo::handler_blocks) {
+	for (auto handler : config_.handler_blocks) {
 		args.body += handler.name + ": " + handler.path + "\n";
 	}
 	

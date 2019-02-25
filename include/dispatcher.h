@@ -5,12 +5,10 @@
 
 class Dispatcher {
 public:
-	static Dispatcher* create(const NginxConfig& config);
+	Dispatcher(const NginxConfig& config)
+		: config_(config), factory_(HandlerFactory()) {}
 	std::unique_ptr<RequestHandler> dispatch(Request& req);
 private:
-	Dispatcher(const NginxConfig& config) : config_(config) {}
-	void extract();
-	
 	NginxConfig config_;
 	HandlerFactory factory_;
 };

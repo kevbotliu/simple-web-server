@@ -6,13 +6,8 @@
 #include <unistd.h>
 
 
-RequestHandler* StaticHandler::create(const NginxConfig& config, const std::string& root_path)
-{
+RequestHandler* StaticHandler::create(const NginxConfig& config, const std::string& root_path) {
 	return new StaticHandler(root_path);
-}
-
-StaticHandler::StaticHandler(std::string root_path) {
-	root_path_ = root_path;
 }
 
 std::unique_ptr<Reply> StaticHandler::HandleRequest(const Request& request) {

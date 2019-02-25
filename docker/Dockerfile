@@ -19,7 +19,6 @@ COPY --from=builder /usr/src/project/build/bin/main .
 EXPOSE 80
 
 # Use ENTRYPOINT to specify the binary name
-# TODO(!): Update with real server name
 ENTRYPOINT ["./main"]
 
 # Copy config file
@@ -29,5 +28,4 @@ COPY --from=builder /usr/src/project/server_config_cloud .
 COPY static_src/* /usr/src/project/static_src/
 
 # Use CMD to specify arguments to ENTRYPOINT
-# TODO(!): Update with real server args
 CMD ["server_config_cloud"]

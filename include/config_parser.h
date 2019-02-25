@@ -7,6 +7,14 @@
 
 class NginxConfig;
 
+typedef struct {
+    std::string name;
+    std::string path;
+    std::string root_path;
+    std::string remote_url; // TODO: might want to delete
+    std::string remote_port;
+  } HandlerBlock;
+
 // The parsed representation of a single config statement.
 class NginxConfigStatement {
  public:
@@ -20,6 +28,8 @@ class NginxConfig {
  public:
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
+  std::vector<HandlerBlock> handler_blocks;
+  void extract();
 };
 
 // The driver that parses a config file and generates an NginxConfig.
