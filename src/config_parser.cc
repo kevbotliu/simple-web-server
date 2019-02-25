@@ -17,6 +17,44 @@
 
 #include "config_parser.h"
 
+
+void NginxConfig::extract() {
+  for (const auto& statement : statements_) {
+    if (statement->tokens_[0] == "#") continue;
+
+    if (statement->tokens_[0] == "handler" && 
+      statement->tokens_.size() == 2 &&
+      statement->child_block_ != nullptr) {
+
+      HandlerBlock block;
+      block.name = statement->tokens_[1];
+      for (auto& child_statement : statement->child_block_->statements_) {
+        if (child_statement->tokens_.size() == 2 &&
+          child_statement->tokens_[0] == "location") {
+          block.path = child_statement->tokens_[1];
+        }
+
+        if (child_statement->tokens_.size() == 2 &&
+          child_statement->tokens_[0] == "root") {
+          block.root_path = child_statement->tokens_[1];
+        }
+
+        if (child_statement->tokens_.size() == 2 &&
+          child_statement->tokens_[0] == "remote_url") {
+          block.remote_url = child_statement->tokens_[1];
+        }
+
+        if (child_statement->tokens_.size() == 2 &&
+          child_statement->tokens_[0] == "remote_port") {
+          block.remote_port = child_statement->tokens_[1];
+        }
+      }
+      handler_blocks.push_back(block);
+    }
+  }
+}
+
+
 std::string NginxConfig::ToString(int depth) {
   std::string serialized_config;
   for (const auto& statement : statements_) {

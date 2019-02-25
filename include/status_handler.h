@@ -9,6 +9,7 @@ public:
 	static RequestHandler* create(const NginxConfig& config, const std::string& root_path);
 	std::unique_ptr<Reply> HandleRequest(const Request& request) override;
 private:
-	StatusHandler() {}
+	NginxConfig config_;
+	StatusHandler(const NginxConfig& config) : config_(config) {}
 };
 #endif

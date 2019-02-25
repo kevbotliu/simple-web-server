@@ -1,5 +1,4 @@
 #include "proxy_handler.h"
-#include "shared.h"
 
 #include <boost/asio.hpp>
 #include <boost/log/core.hpp>
@@ -18,7 +17,7 @@
 using boost::asio::ip::tcp;
 
 RequestHandler* ProxyHandler::create(const NginxConfig& config, const std::string& root_path) {
-	return new ProxyHandler();
+	return new ProxyHandler(config);
 }
 
 std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
@@ -148,7 +147,7 @@ std::pair<std::string,std::string> ProxyHandler::get_remote_info() {
 		
 		Gathers corresponding remote url and remote port for redirect
 	*/
-	for (auto handler : HandlerInfo::handler_blocks) {
+	for (auto handler : config_.handler_blocks) {
 		if (handler.name == "ucla") {
 			return std::pair<std::string,std::string> (handler.remote_url, handler.remote_port);
 		}

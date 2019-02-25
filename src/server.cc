@@ -3,12 +3,14 @@
 server::server(boost::asio::io_service& io_service, NginxConfig& config, short port)
     : io_service_(io_service),
       acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
-      dispatcher_(Dispatcher::create(config)),
       log()
   {
-
+    config.extract();
+    dispatcher_ = new Dispatcher(config);
     start_accept();
   }
+
+server::~server() { delete dispatcher_; }
 
 void server::start_accept()
   {

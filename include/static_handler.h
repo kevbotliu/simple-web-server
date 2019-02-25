@@ -11,8 +11,9 @@ public:
 	std::unique_ptr<Reply> HandleRequest(const Request& request) override;
 
 private:
+	std::string root_path_;
+	StaticHandler(std::string root_path) : root_path_(root_path) {}
 	std::string ext;
-	StaticHandler(std::string root_path);
 
 	ReplyArgs build_response(const Request& request);
 };

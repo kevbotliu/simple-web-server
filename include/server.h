@@ -12,7 +12,7 @@ class server
 {
 public:
 	server(boost::asio::io_service& io_service, NginxConfig& config, short port);
-
+	~server();
 private:
 	void init_config(std::string config_file);
 	void start_accept();
