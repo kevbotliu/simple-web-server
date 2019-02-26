@@ -56,7 +56,7 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	boost::asio::connect(socket, endpoint_iterator);
 
 	// build request string
-	std::string request_str = "GET " + request.get_path() + " HTTP/1.1\r\n";
+	std::string request_str = "GET / HTTP/1.1\r\n";
 	request_str += std::string("Host: ") + host + "\r\n";
 	request_str += std::string("Connection: keep-alive\r\n");
 	request_str += std::string("Accept: */*\r\n");
@@ -86,6 +86,19 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	}
 
 	std::cout << "Received response string, parsing..." << std::endl;
+
+	if (returned_response.find("text/html") != std::string::npos) {
+		int href_pos = returned_response.find("href=\"/");
+		while (href_pos != std::string::npos) {
+			returned_response.replace(href_pos, 7, "href=\"http://" + host + "/");
+			href_pos = returned_response.find("href=\"/");
+		}
+		int src_pos = returned_response.find("src=\"/");
+		while (src_pos != std::string::npos) {
+			returned_response.replace(src_pos, 6, "src=\"http://" + host + "/");
+			src_pos = returned_response.find("src=\"/");
+		}
+	}
 
 	// get the response in parsed format
 	std::map<std::string,std::string> parse_map = parse_returned_response(returned_response);
@@ -148,7 +161,7 @@ std::pair<std::string,std::string> ProxyHandler::get_remote_info() {
 		Gathers corresponding remote url and remote port for redirect
 	*/
 	for (auto handler : config_.handler_blocks) {
-		if (handler.name == "ucla") {
+		if (handler.name == "proxy") {
 			return std::pair<std::string,std::string> (handler.remote_url, handler.remote_port);
 		}
 	}

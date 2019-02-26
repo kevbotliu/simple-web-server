@@ -15,7 +15,7 @@ handler status {
 	location /status;
 }
 
-handler ucla {
+handler proxy {
 	location /ucla;
 	remote_url www.ucla.edu;
 	remote_port 80;
