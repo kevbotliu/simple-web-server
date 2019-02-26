@@ -161,6 +161,7 @@ std::pair<std::string,std::string> ProxyHandler::get_remote_info() {
 		Gathers corresponding remote url and remote port for redirect
 	*/
 	for (auto handler : config_.handler_blocks) {
+		std::cout << handler.name << std::endl;
 		if (handler.name == "proxy") {
 			return std::pair<std::string,std::string> (handler.remote_url, handler.remote_port);
 		}

@@ -1,0 +1,26 @@
+listen 8080;
+
+root /usr/src/projects/;
+
+handler static {
+	location /static;
+	root static_src;
+}
+
+handler echo {
+	location /echo;
+}
+
+handler status {
+	location /status;
+}
+
+handler proxy {
+	location /ucla;
+	remote_url www.ucla.edu;
+	remote_port 80;
+}
+
+handler 404 {
+	location /;
+}
