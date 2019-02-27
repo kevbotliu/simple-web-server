@@ -47,6 +47,9 @@ add_library(echo_handler_lib src/echo_handler.cc)
 add_library(status_handler_lib src/status_handler.cc)
 add_library(not_found_handler_lib src/not_found_handler.cc)
 
+add_library(proxy_handler_lib src/proxy_handler.cc)
+target_link_libraries(proxy_handler_lib Boost::log_setup Boost::log)
+
 add_library(static_handler_lib src/static_handler.cc)
 target_link_libraries(static_handler_lib pathfinder_lib)
 
@@ -70,6 +73,7 @@ target_link_libraries(
 	dispatcher_lib
 	pathfinder_lib
 	echo_handler_lib
+	proxy_handler_lib
 	static_handler_lib
 	status_handler_lib
 	not_found_handler_lib
@@ -98,7 +102,10 @@ add_executable(echo_handler_test tests/echo_handler_test.cc)
 target_link_libraries(echo_handler_test request_lib reply_lib echo_handler_lib gtest_main Boost::system)
 
 add_executable(static_handler_test tests/static_handler_test.cc)
-target_link_libraries(static_handler_test request_lib reply_lib static_handler_lib gtest_main Boost::system)
+target_link_libraries(static_handler_test static_handler_lib  request_lib reply_lib gtest_main Boost::system)
+
+add_executable(proxy_handler_test tests/proxy_handler_test.cc)
+target_link_libraries(proxy_handler_test request_lib reply_lib proxy_handler_lib config_parser_lib gtest_main Boost::system)
 
 # add_test(integration_test, ../tests/IntegrationTest [WORKING_DIRECTORY ../tests])
 
@@ -109,6 +116,8 @@ gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/te
 # gtest_discover_tests(dispatcher_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(proxy_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
 
 
 # TODO(!): Add library under TARGETS and TESTS and lib_test to generate_coverage_report
@@ -127,6 +136,11 @@ generate_coverage_report(
 		echo_handler_lib
 		static_handler_lib
 		status_handler_lib
+<<<<<<< HEAD
+		proxy_handler_lib
+=======
+		proxy_handler
+>>>>>>> 2775eba... further progress on proxy handler, need some input
 		shared_lib
 		not_found_handler_lib
 	TESTS
@@ -136,4 +150,5 @@ generate_coverage_report(
 		static_handler_test
 		# dispatcher_test
 		echo_handler_test
+		proxy_handler_test
 )

@@ -64,6 +64,11 @@ void NginxConfig::extract() {
           child_statement->tokens_[0] == "remote_port") {
           block.remote_port = child_statement->tokens_[1];
         }
+
+        if (child_statement->tokens_.size() == 2 &&
+          child_statement->tokens_[0] == "remote_path") {
+          block.remote_path = child_statement->tokens_[1];
+        }
       }
       handler_blocks.push_back(block);
     }

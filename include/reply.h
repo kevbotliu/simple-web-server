@@ -9,6 +9,7 @@
 // Add more when necessary
 static std::map<int, std::string> status_msgs = {
   {200, "OK"},
+  {302, "Redirect"},
   {404, "Not Found"}
 };
 

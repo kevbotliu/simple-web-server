@@ -1,0 +1,10 @@
+listen 5000;
+
+root /usr/src/projects/;
+
+handler proxy {
+	location /proxy;
+	remote_url www.columbia.edu;
+	remote_path /~fdc/sample.html;
+	remote_port 80;
+}

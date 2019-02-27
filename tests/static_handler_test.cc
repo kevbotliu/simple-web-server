@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
-#include "static_handler.h"
 #include "request.h"
 #include "reply.h"
+#include "static_handler.h"
 
 class StaticHandlerTest : public ::testing::Test {
   protected:
