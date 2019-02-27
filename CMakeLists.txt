@@ -136,11 +136,7 @@ generate_coverage_report(
 		echo_handler_lib
 		static_handler_lib
 		status_handler_lib
-<<<<<<< HEAD
 		proxy_handler_lib
-=======
-		proxy_handler
->>>>>>> 2775eba... further progress on proxy handler, need some input
 		shared_lib
 		not_found_handler_lib
 	TESTS

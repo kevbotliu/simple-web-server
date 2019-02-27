@@ -25,9 +25,9 @@ class ProxyHandlerTest : public ::testing::Test
 
 TEST_F(ProxyHandlerTest, ValidResponseTest) {
     ASSERT_TRUE(setup_config());
-    std::string s = "GET /proxy HTTP/1.1\r\n\r\n";
+    std::string s = "GET / HTTP/1.1\r\n\r\n";
     const Request *req = new Request(s);
-    std::string root_path = "proxy";
+    std::string root_path = "/";
     success = ProxyHandler::create(out_config, root_path)
                 ->HandleRequest(*req)->is_valid();
     EXPECT_TRUE(success);
@@ -35,9 +35,9 @@ TEST_F(ProxyHandlerTest, ValidResponseTest) {
 
 TEST_F(ProxyHandlerTest, SuccessStatusCodeResponseTest) {
     ASSERT_TRUE(setup_config());
-    std::string s = "GET /proxy HTTP/1.1\r\n\r\n";
+    std::string s = "GET / HTTP/1.1\r\n\r\n";
     const Request *req = new Request(s);
-    std::string root_path = "proxy";
+    std::string root_path = "/";
     success = (ProxyHandler::create(out_config, root_path)
                 ->HandleRequest(*req)->get_status_code() == 200);
     EXPECT_TRUE(success);
