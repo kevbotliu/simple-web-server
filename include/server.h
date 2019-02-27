@@ -11,15 +11,18 @@ using boost::asio::ip::tcp;
 class server
 {
 public:
-	server(boost::asio::io_service& io_service, NginxConfig& config);
+	server(const NginxConfig& config);
 	~server();
+	void run();
 private:
-	void init_config(std::string config_file);
 	void start_accept();
 	void handle_accept(session* new_session, const boost::system::error_code& error);
-	boost::asio::io_service& io_service_;
+	void shutdown();
+	boost::asio::io_service io_service_;
+	boost::asio::signal_set signals_;
   	tcp::acceptor acceptor_;
   	Dispatcher* dispatcher_;
+  	NginxConfig config_;
 	logger log;
 };
 #endif
