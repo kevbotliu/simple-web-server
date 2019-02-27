@@ -48,6 +48,11 @@ void NginxConfig::extract() {
           child_statement->tokens_[0] == "remote_port") {
           block.remote_port = child_statement->tokens_[1];
         }
+
+        if (child_statement->tokens_.size() == 2 &&
+          child_statement->tokens_[0] == "remote_path") {
+          block.remote_path = child_statement->tokens_[1];
+        }
       }
       handler_blocks.push_back(block);
     }
@@ -203,7 +208,6 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
 
      /* Anticipate the listen directive, and get the port number. */
     if (next == true) {
-      port = atoi(token.c_str());
       has_port = true;
       next = false;
     }
@@ -299,8 +303,4 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
       Parse(dynamic_cast<std::istream*>(&config_file), config);
   config_file.close();
   return return_value;
-}
-
-short NginxConfigParser::getPort() {
-  return port;
 }

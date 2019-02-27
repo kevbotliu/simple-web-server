@@ -12,7 +12,7 @@ private:
 	ProxyHandler(const NginxConfig& config) : config_(config) {}    //TODO: Perhaps need more variables to hold config stuff for the proxy
 
 	std::map<std::string,std::string> parse_returned_response(std::string response);
-	std::pair<std::string,std::string> get_remote_info();
+	std::tuple<std::string,std::string,std::string> get_remote_info();
 	
 };
 #endif

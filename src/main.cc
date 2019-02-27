@@ -7,18 +7,6 @@
 
 #include "handler_factory.h"
 
-void shutdown_handler(
-    const boost::system::error_code& error,
-    int signal_number)
-{
-  if (!error)
-  {
-    logger log; 
-    log.log("Main: Server Shut Down.", boost::log::trivial::info);
-    exit(0);
-  }
-}
-
 int main(int argc, char* argv[])
 {
   logger log; 
@@ -32,7 +20,6 @@ int main(int argc, char* argv[])
       return 1;
     } 
 
-    boost::asio::io_service io_service;
     log.log("Main: Starting Server...", boost::log::trivial::info);
 
     NginxConfigParser parser;
@@ -41,19 +28,14 @@ int main(int argc, char* argv[])
       log.log("Main: Missing or malformed configuration file detected", boost::log::trivial::error);
       return false;
     }
+    config.extract();
 
     log.log("Main: Configuration Parsed Successfully.", boost::log::trivial::info);
-    std::string message = "Main: Setting up Server on Port " + std::to_string(parser.getPort()) + "...";
+    std::string message = "Main: Setting up Server on Port " + std::to_string(config.port) + "...";
     log.log(message, boost::log::trivial::info);
 
-    server s(io_service, config, parser.getPort());
-
-    // Construct a signal set registered for process termination.
-    boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
-    signals.async_wait(shutdown_handler);
-    io_service.run();
-
-    // Start an asynchronous wait for one of the signals to occur.
+    server s(config);
+    s.run();
 
   }
   catch (std::exception& e)

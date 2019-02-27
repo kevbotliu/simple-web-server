@@ -1,4 +1,7 @@
 #include "server.h"
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
 
 server::server(boost::asio::io_service& io_service, NginxConfig& config, short port)
     : io_service_(io_service),
@@ -21,20 +24,22 @@ void server::start_accept()
           boost::asio::placeholders::error));
   }
 
-void server::handle_accept(session* new_session,
-      const boost::system::error_code& error)
+void server::handle_accept(session* new_session, const boost::system::error_code& error)
   {
-    if (!error)
-    {
+    if (!error) {
       std::string ip_addr = new_session->socket().remote_endpoint().address().to_string();
       std::string message = "Session: IP: " + ip_addr + ": Starting A New Session...";
       log.log(message, boost::log::trivial::info);
       new_session->start();
     }
-    else
-    {
-      delete new_session;
-    }
 
     start_accept();
+  }
+
+void server::shutdown()
+  {
+    log.log("Main: Server Shut Down.", boost::log::trivial::info);
+    io_service_.stop();
+    
+    exit(0);
   }

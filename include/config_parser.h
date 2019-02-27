@@ -13,6 +13,7 @@ typedef struct {
     std::string root_path;
     std::string remote_url; // TODO: might want to delete
     std::string remote_port;
+    std::string remote_path;
   } HandlerBlock;
 
 // The parsed representation of a single config statement.
@@ -42,7 +43,6 @@ class NginxConfigParser {
   // iff the input config file is valid.
   bool Parse(std::istream* config_file, NginxConfig* config);
   bool Parse(const char* file_name, NginxConfig* config);
-  short getPort();
 
  private:
   enum TokenType {

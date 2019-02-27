@@ -55,7 +55,15 @@ void session::handle_read(const boost::system::error_code& error,
 
 void session::handle_write(const boost::system::error_code& error)
   {
-    delete this;
+    if (!error)
+    {
+      // Initiate graceful connection closure.
+      boost::system::error_code ignored_ec;
+      socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+    }
+    else {
+      delete this;
+    }
     // if (!error)
     // {
     //   socket_.async_read_some(boost::asio::buffer(data_, max_length),

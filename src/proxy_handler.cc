@@ -34,13 +34,18 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	boost::asio::io_service io_service;
 	tcp::resolver resolver(io_service);
 
+<<<<<<< HEAD
 	// obtains pair (remote_url, remote_port)
-	std::pair<std::string,std::string> remote_pair = get_remote_info();
-	std::string host = remote_pair.first, port = remote_pair.second;
+	std::tuple<std::string,std::string,std::string> remote_pair = get_remote_info();
+	std::string host = std::get<0>(remote_pair), port = std::get<1>(remote_pair), remotepath = std::get<2>(remote_pair);
 	
 	// send out query
 	std::cout << "Host: " << host << " Port: " << port << std::endl;
 	tcp::resolver::query query(host, port, boost::asio::ip::resolver_query_base::numeric_service);
+=======
+	// set up query
+	tcp::resolver::query query("www.ucla.edu", "http", boost::asio::ip::resolver_query_base::numeric_service);
+>>>>>>> 2775eba... further progress on proxy handler, need some input
 	tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 	tcp::resolver::iterator iter = endpoint_iterator;
 	tcp::resolver::iterator end;
@@ -55,9 +60,15 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	tcp::socket socket(io_service);
 	boost::asio::connect(socket, endpoint_iterator);
 
+<<<<<<< HEAD
 	// build request string
-	std::string request_str = "GET / HTTP/1.1\r\n";
+	std::string request_str = "GET " + remotepath + " HTTP/1.1\r\n";
 	request_str += std::string("Host: ") + host + "\r\n";
+=======
+	std::string request_str = "GET " + request.get_path() + " HTTP/1.1\r\n";
+	
+	request_str += std::string("Host: ") + "host_url\r\n";
+>>>>>>> 2775eba... further progress on proxy handler, need some input
 	request_str += std::string("Connection: keep-alive\r\n");
 	request_str += std::string("Accept: */*\r\n");
 	request_str += std::string("Connection: close\r\n\r\n");
@@ -71,10 +82,11 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	// read in response data
 	std::string returned_response;
 	while(1) {
-		boost::array<char, 4096> buffy;
+		boost::array<char, 512> buffy;
 		boost::system::error_code error;
-		size_t len_data = socket.read_some(boost::asio::buffer(buffy), error);
 		
+		size_t len_data = socket.read_some(boost::asio::buffer(buffy), error);
+
 		// check for EOF
 		if (error == boost::asio::error::eof) {
 			BOOST_LOG_TRIVIAL(trace) << "EOF reached!";
@@ -83,6 +95,8 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 
 		// assign response string to incoming data
 		returned_response += std::string(buffy.data(), len_data);
+		//returned_response += {buffers_begin(response.data()), buffers_end(response.data())};
+		
 	}
 
 	std::cout << "Received response string, parsing..." << std::endl;
@@ -111,7 +125,7 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 
 	// complete final response
 	ReplyArgs args;
-	args.headers.push_back(std::make_pair("Content-type", "text/html"));
+	args.headers.push_back(std::make_pair("Content-type", parse_map["Content-Type"]));
 	args.headers.push_back(std::make_pair("Content-length", std::to_string(response_body.length())));
 	args.body = response_body;
 	std::cout << "Completed building final response" << std::endl;
@@ -148,22 +162,44 @@ std::map<std::string,std::string> ProxyHandler::parse_returned_response(std::str
 	// TODO: got some magic numbers here
 	response_map["Status"] = response.substr(0, status_index + 1);
 	response_map["Headers"] = response.substr(0, header_index);
-	response_map["Body"] = response.substr(header_index + 11, response.size());
+	response_map["Body"] = response.substr(header_index + 4, response.size());
+	
+
+	std::size_t contenttype_index;
+	if ((contenttype_index = response.find("Content-Type:")) != std::string::npos) {
+		int i = 0;
+		while (response[contenttype_index + i] != '\r')
+			i++;
+		response_map["Content-Type"] = response.substr(contenttype_index + 14, i);
+	}
+	else
+	{
+		response_map["Content-Type"] = "text/html";
+	}
+	
 
 	// TODO: add checks further checks for validity on these strings, continue on
 	return response_map;
 }
 
-std::pair<std::string,std::string> ProxyHandler::get_remote_info() {
+std::tuple<std::string,std::string,std::string> ProxyHandler::get_remote_info() {
 	/*
 		Author: Konner Macias
 		
 		Gathers corresponding remote url and remote port for redirect
 	*/
 	for (auto handler : config_.handler_blocks) {
+<<<<<<< HEAD
 		std::cout << handler.name << std::endl;
 		if (handler.name == "proxy") {
+<<<<<<< HEAD
+=======
+		if (handler.name == "ucla") {
+>>>>>>> 6691799... Move handler info back into NginxConfig, allowing access to handler block info in each passed config param
 			return std::pair<std::string,std::string> (handler.remote_url, handler.remote_port);
+=======
+			return std::tuple<std::string,std::string,std::string> (handler.remote_url, handler.remote_port, handler.remote_path);
+>>>>>>> 7baf38e... Added remote_path handling in proxy handler. Integration test for proxy handler
 		}
 	}
 }
