@@ -41,12 +41,13 @@ int main(int argc, char* argv[])
       log.log("Main: Missing or malformed configuration file detected", boost::log::trivial::error);
       return false;
     }
+    config.extract();
 
     log.log("Main: Configuration Parsed Successfully.", boost::log::trivial::info);
-    std::string message = "Main: Setting up Server on Port " + std::to_string(parser.getPort()) + "...";
+    std::string message = "Main: Setting up Server on Port " + std::to_string(config.port) + "...";
     log.log(message, boost::log::trivial::info);
 
-    server s(io_service, config, parser.getPort());
+    server s(io_service, config);
 
     // Construct a signal set registered for process termination.
     boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);

@@ -22,6 +22,22 @@ void NginxConfig::extract() {
   for (const auto& statement : statements_) {
     if (statement->tokens_[0] == "#") continue;
 
+    if ((statement->tokens_[0] == "listen" ||
+        statement->tokens_[0] == "port") &&
+        statement->tokens_.size() == 2) {
+      port = std::stoi(statement->tokens_[1]);
+    }
+
+    if (statement->tokens_[0] == "root" &&
+        statement->tokens_.size() == 2) {
+      server_root_path = statement->tokens_[1];
+    }
+
+    if (statement->tokens_[0] == "threads" &&
+        statement->tokens_.size() == 2) {
+      num_threads = std::stoi(statement->tokens_[1]);
+    }
+
     if (statement->tokens_[0] == "handler" && 
       statement->tokens_.size() == 2 &&
       statement->child_block_ != nullptr) {
@@ -203,7 +219,6 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
 
      /* Anticipate the listen directive, and get the port number. */
     if (next == true) {
-      port = atoi(token.c_str());
       has_port = true;
       next = false;
     }
@@ -299,8 +314,4 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
       Parse(dynamic_cast<std::istream*>(&config_file), config);
   config_file.close();
   return return_value;
-}
-
-short NginxConfigParser::getPort() {
-  return port;
 }

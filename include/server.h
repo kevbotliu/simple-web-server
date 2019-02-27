@@ -11,7 +11,7 @@ using boost::asio::ip::tcp;
 class server
 {
 public:
-	server(boost::asio::io_service& io_service, NginxConfig& config, short port);
+	server(boost::asio::io_service& io_service, NginxConfig& config);
 	~server();
 private:
 	void init_config(std::string config_file);

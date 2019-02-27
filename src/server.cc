@@ -1,12 +1,11 @@
 #include "server.h"
 
-server::server(boost::asio::io_service& io_service, NginxConfig& config, short port)
+server::server(boost::asio::io_service& io_service, NginxConfig& config)
     : io_service_(io_service),
-      acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
+      acceptor_(io_service, tcp::endpoint(tcp::v4(), config.port)),
+      dispatcher_(new Dispatcher(config)),
       log()
   {
-    config.extract();
-    dispatcher_ = new Dispatcher(config);
     start_accept();
   }
 
