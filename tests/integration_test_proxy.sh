@@ -6,7 +6,7 @@ echo "Starting Proxy Server ..."
 ./build/bin/main ./tests/proxy_integration_config_proxy &
 
 echo "Fetching file through proxy..."
-curl -i http://localhost:5000/proxy > ./tests/proxy.txt
+curl -i http://localhost:5000/proxy/~fdc/sample.html > ./tests/proxy.txt
 
 echo "Fetching file directly from source..."
 curl -i http://www.columbia.edu/~fdc/sample.html > ./tests/source.txt

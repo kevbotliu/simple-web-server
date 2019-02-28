@@ -20,7 +20,6 @@ handler proxy {
 	location /ucla;
 	remote_url www.ucla.edu;
 	remote_port 80;
-	remote_path /;
 }
 
 handler 404 {

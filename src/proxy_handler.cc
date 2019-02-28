@@ -36,7 +36,7 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 
 	// obtains pair (remote_url, remote_port)
 	std::tuple<std::string,std::string,std::string> remote_pair = get_remote_info();
-	std::string host = std::get<0>(remote_pair), port = std::get<1>(remote_pair), remotepath = std::get<2>(remote_pair);
+	std::string host = std::get<0>(remote_pair), port = std::get<1>(remote_pair), path = std::get<2>(remote_pair);
 	
 	// send out query
 	std::cout << "Host: " << host << " Port: " << port << std::endl;
@@ -56,7 +56,10 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 	boost::asio::connect(socket, endpoint_iterator);
 
 	// build request string
-	std::string request_str = "GET " + remotepath + " HTTP/1.1\r\n";
+	std::string nested_url = "";
+	if (request.get_path() != "/")
+		nested_url = request.get_path().substr(path.length(), request.get_path().length()-1);
+	std::string request_str = "GET /" + nested_url + " HTTP/1.1\r\n";
 	request_str += std::string("Host: ") + host + "\r\n";
 	request_str += std::string("Connection: keep-alive\r\n");
 	request_str += std::string("Accept: */*\r\n");
@@ -180,7 +183,7 @@ std::tuple<std::string,std::string,std::string> ProxyHandler::get_remote_info() 
 	for (auto handler : config_.handler_blocks) {
 		std::cout << handler.name << std::endl;
 		if (handler.name == "proxy") {
-			return std::tuple<std::string,std::string,std::string> (handler.remote_url, handler.remote_port, handler.remote_path);
+			return std::tuple<std::string,std::string,std::string> (handler.remote_url, handler.remote_port, handler.path);
 		}
 	}
 }

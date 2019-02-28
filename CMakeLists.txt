@@ -108,6 +108,7 @@ add_executable(proxy_handler_test tests/proxy_handler_test.cc)
 target_link_libraries(proxy_handler_test request_lib reply_lib proxy_handler_lib config_parser_lib gtest_main Boost::system)
 
 # add_test(integration_test, ../tests/IntegrationTest [WORKING_DIRECTORY ../tests])
+# add_test(integration_test_proxy, ../tests/integration_test_proxy.sh [WORKING_DIRECTORY ../tests])
 
 # TODO(!): Update with test binary
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)

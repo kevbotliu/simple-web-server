@@ -13,7 +13,6 @@ typedef struct {
     std::string root_path;
     std::string remote_url; // TODO: might want to delete
     std::string remote_port;
-    std::string remote_path;
   } HandlerBlock;
 
 // The parsed representation of a single config statement.
