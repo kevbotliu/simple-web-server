@@ -15,7 +15,7 @@ server::server(const NginxConfig& config)
     signals_.async_wait(boost::bind(&server::shutdown, this));
 
     tcp::resolver resolver(io_service_);
-    tcp::resolver::query query("localhost", std::to_string(config_.port));
+    tcp::resolver::query query("0.0.0.0", std::to_string(config_.port));
     tcp::endpoint endpoint = *resolver.resolve(query);
     acceptor_.open(endpoint.protocol());
     acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
@@ -50,6 +50,7 @@ void server::start_accept()
 void server::handle_accept(session* new_session, const boost::system::error_code& error)
   {
     if (!error) {
+
       std::string ip_addr = new_session->socket().remote_endpoint().address().to_string();
       std::string message = "Session: IP: " + ip_addr + ": Starting A New Session...";
       log.log(message, boost::log::trivial::info);

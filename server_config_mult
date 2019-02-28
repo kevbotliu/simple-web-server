@@ -1,6 +1,7 @@
 listen 8080;
 
 root /usr/src/projects/;
+threads 4;
 
 handler static {
 	location /static;
