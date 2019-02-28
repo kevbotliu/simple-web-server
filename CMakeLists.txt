@@ -121,30 +121,30 @@ gtest_discover_tests(proxy_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE
 
 
 # TODO(!): Add library under TARGETS and TESTS and lib_test to generate_coverage_report
-# include(cmake/CodeCoverageReportConfig.cmake)
-# generate_coverage_report(
-# 	TARGETS
-# 		main
-# 		server_lib
-# 		session_lib
-# 		config_parser_lib
-# 		request_lib
-# 		reply_lib
-# 		handler_factory_lib
-# 		dispatcher_lib
-# 		pathfinder_lib
-# 		echo_handler_lib
-# 		static_handler_lib
-# 		status_handler_lib
-# 		proxy_handler_lib
-# 		shared_lib
-# 		not_found_handler_lib
-# 	TESTS
-# 		config_parser_test
-# 		request_test
-# 		reply_test
-# 		static_handler_test
-# 		# dispatcher_test
-# 		echo_handler_test
-# 		proxy_handler_test
-# )
+include(cmake/CodeCoverageReportConfig.cmake)
+generate_coverage_report(
+	TARGETS
+		main
+		server_lib
+		session_lib
+		config_parser_lib
+		request_lib
+		reply_lib
+		handler_factory_lib
+		dispatcher_lib
+		pathfinder_lib
+		echo_handler_lib
+		static_handler_lib
+		status_handler_lib
+		proxy_handler_lib
+		shared_lib
+		not_found_handler_lib
+	TESTS
+		config_parser_test
+		request_test
+		reply_test
+		static_handler_test
+		# dispatcher_test
+		echo_handler_test
+		proxy_handler_test
+)
