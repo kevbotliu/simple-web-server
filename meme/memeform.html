@@ -1,0 +1,62 @@
+<!-- The code was copied from the Bootstrap quick start. https://getbootstrap.com/docs/4.3/getting-started/introduction/
+
+     The design was influenced by the "Cover Template" example from Bootstrap. https://getbootstrap.com/docs/4.3/examples/cover/
+-->
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Meme Generator!</title>
+  </head>
+  <body class="text-center">
+    <main class="inner-cover" role="main">
+    <h1 class="cover-heading">Make your own meme!</h1>
+    <p class="lead">
+    	Just pick a meme, enter top text, enter bottom text, and click "Create"!
+    </p>
+    <!-- <img src="grumpy.jpg" class="img-thumbnail"> -->
+    <form>
+	    <div class="form-group">
+		    <select class="custom-select" id="memeselect">
+			    <option selected>Choose a meme!</option>
+			    <option value="1">One does not simply...</option>
+			    <option value="2">Grumpy cat</option>
+		    </select>
+	    </div>
+	    <div class="form-group">
+		    <input class="form-control" id="top" placeholder="Top text">
+		    <input class="form-control" id="bot" placeholder="Bottom text">
+	    </div>
+	    <buttom type="submit" class="btn btn-primary">Create</button>
+    </form>
+    </main>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+<!-- <form action="/meme/create" method="post">
+	<select name="image">
+		<option>Select a template...</option>
+		<option value="simply.jpg">one does not simply</option>
+		<option value="grumpy.jpg">grumpy cat</option>
+	</select><br>
+	<input type="text" name="top" placeholder="Top text..."><br>
+	<input type="text" name="bottom" placeholder="Bottom text..."<br>
+</form> -->
