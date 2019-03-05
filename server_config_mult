@@ -25,3 +25,8 @@ handler proxy {
 handler 404 {
 	location /;
 }
+
+handler meme {
+	location /meme;
+}
+

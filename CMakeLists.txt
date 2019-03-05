@@ -53,6 +53,8 @@ target_link_libraries(proxy_handler_lib Boost::log_setup Boost::log)
 add_library(static_handler_lib src/static_handler.cc)
 target_link_libraries(static_handler_lib pathfinder_lib)
 
+add_library(meme_handler_lib src/meme_handler.cc)
+
 add_library(dispatcher_lib src/dispatcher.cc)
 target_link_libraries(dispatcher_lib pathfinder_lib)
 
@@ -76,6 +78,7 @@ target_link_libraries(
 	proxy_handler_lib
 	static_handler_lib
 	status_handler_lib
+	meme_handler_lib
 	not_found_handler_lib
 	config_parser_lib
 	Boost::system
@@ -137,6 +140,7 @@ generate_coverage_report(
 		echo_handler_lib
 		static_handler_lib
 		status_handler_lib
+		meme_handler_lib
 		proxy_handler_lib
 		shared_lib
 		not_found_handler_lib
