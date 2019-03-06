@@ -14,5 +14,6 @@ private:
 	MemeHandler(const NginxConfig& config, std::string root_path) : config_(config), root_path_(root_path) {}
 
 	std::unique_ptr<Reply> handleView(int id);
+	std::unique_ptr<Reply> handleList();
 };
 #endif
