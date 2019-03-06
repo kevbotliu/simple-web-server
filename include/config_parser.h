@@ -29,7 +29,7 @@ class NginxConfig {
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
 
-  void extract();
+  void extractHandlerInfo();
 
   short port = 1;
   std::string server_root_path = "./";

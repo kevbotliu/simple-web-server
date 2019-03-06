@@ -12,7 +12,7 @@ class ProxyHandlerTest : public ::testing::Test
 
     bool setup_config() {
        bool parse_success = parser.Parse("../tests/proxy_config", &out_config);
-       out_config.extract();
+       out_config.extractHandlerInfo();
        return parse_success;
     }
 

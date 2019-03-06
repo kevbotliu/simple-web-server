@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
       log.log("Main: Missing or malformed configuration file detected", boost::log::trivial::error);
       return false;
     }
-    config.extract();
+    config.extractHandlerInfo();
 
     log.log("Main: Configuration Parsed Successfully.", boost::log::trivial::info);
     std::string message = "Main: Setting up Server on Port " + std::to_string(config.port) + "...";

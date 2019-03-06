@@ -28,5 +28,10 @@ handler 404 {
 
 handler meme {
 	location /meme;
+	root meme_src;
 }
+
+
+
+
 

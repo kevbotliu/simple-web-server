@@ -10,6 +10,9 @@ public:
 	std::unique_ptr<Reply> HandleRequest(const Request& request) override;
 private:
 	NginxConfig config_;
-	MemeHandler(const NginxConfig& config) : config_(config) {}
+	std::string root_path_;
+	MemeHandler(const NginxConfig& config, std::string root_path) : config_(config), root_path_(root_path) {}
+
+	std::unique_ptr<Reply> handleView(int id);
 };
 #endif

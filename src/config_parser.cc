@@ -18,7 +18,7 @@
 #include "config_parser.h"
 
 
-void NginxConfig::extract() {
+void NginxConfig::extractHandlerInfo() {
   for (const auto& statement : statements_) {
     if (statement->tokens_[0] == "#") continue;
 
@@ -66,6 +66,16 @@ void NginxConfig::extract() {
         }
       }
       handler_blocks.push_back(block);
+    }
+  }
+
+  // Sort handler paths by decreasing length alphabetically
+  // Or create a stricter path matcher in dispatcher
+  // Easier solution for now: send 404 block to end
+  for (int i=0; i < handler_blocks.size()-1; i++) {
+    if (handler_blocks[i].name == "404") {
+      std::swap(handler_blocks[i], handler_blocks[handler_blocks.size()-1]);
+      break;
     }
   }
 }
@@ -283,7 +293,6 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
     } else if (token_type == TOKEN_TYPE_EOF) {
       if ((last_token_type != TOKEN_TYPE_STATEMENT_END &&
           last_token_type != TOKEN_TYPE_END_BLOCK) ||
-          !has_port ||
           !braces_stack.empty()) {
         // Error.
         break;

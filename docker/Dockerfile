@@ -26,6 +26,7 @@ COPY --from=builder /usr/src/project/server_config_cloud .
 # COPY --from=builder /usr/src/project/static_src/ ../static_src/
 
 COPY static_src/* /usr/src/project/static_src/
+COPY meme_src/* /usr/src/project/meme_src/
 
 # Use CMD to specify arguments to ENTRYPOINT
 CMD ["server_config_cloud"]
