@@ -7,11 +7,29 @@ RequestHandler* MemeHandler::create(const NginxConfig& config, const std::string
 
 std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 	if (!request.is_valid()) return std::unique_ptr<Reply>(nullptr);
-	if (request.get_method() != "GET") return std::unique_ptr<Reply>(nullptr);
+	// if (request.get_method() != "GET") return std::unique_ptr<Reply>(nullptr);
 
-	// Testing id
-	// id will be received by the url parameter e.g. /meme/view?id=123456789
-	return handleList();
+	std::string subpath = request.get_path().erase(0, 5);
+
+	if (subpath.find("/new") == 0) {
+		// return handleNew...
+	}
+	if (subpath.find("/create") == 0) {
+		// return handleCreate...
+	}
+	if (subpath.find("/view") == 0) {
+		// Testing id
+		// id will be received by the url parameter e.g. /meme/view?id=123456789
+		return handleView(123456789);
+	}
+	if (subpath.find("/list") == 0) {
+		return handleList();
+	}
+
+	ReplyArgs args;
+	args.status_code = 404;
+	args.body = "404 Not Found";
+	return std::unique_ptr<Reply>(new Reply(args));
 }
 
 std::unique_ptr<Reply> MemeHandler::handleView(int id) {
