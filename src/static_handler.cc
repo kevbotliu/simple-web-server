@@ -11,19 +11,12 @@ RequestHandler* StaticHandler::create(const NginxConfig& config, const std::stri
 }
 
 std::unique_ptr<Reply> StaticHandler::HandleRequest(const Request& request) {
-	if (!request.is_valid()) {
-		return std::unique_ptr<Reply>(nullptr);
-	}
+	if (request.get_method() != "GET") return std::unique_ptr<Reply>(new Reply(false));
 
 	ReplyArgs args;
-	if (request.get_method() != "GET") {
-		return std::unique_ptr<Reply>(nullptr);
-	}
-
 	args = build_response(request);
 
 	return std::unique_ptr<Reply>(new Reply(args));
-	
 }
 
 ReplyArgs StaticHandler::build_response(const Request& request)

@@ -22,6 +22,7 @@ typedef struct {
 
 class Reply {
 public:
+	Reply(bool is_default);
 	Reply(ReplyArgs args);
 
 	int get_status_code();

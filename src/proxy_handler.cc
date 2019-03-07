@@ -27,8 +27,7 @@ std::unique_ptr<Reply> ProxyHandler::HandleRequest(const Request& request) {
 		Checks for valid request, creates new session, sends out response
 		to new remote url and port. Get's responsea and checks is complete.
 	*/
-	if (!request.is_valid()) return std::unique_ptr<Reply>(nullptr);
-	if (request.get_method() != "GET") return std::unique_ptr<Reply>(nullptr);
+	if (request.get_method() != "GET") return std::unique_ptr<Reply>(new Reply(false));
 
 	// start servicing
 	boost::asio::io_service io_service;

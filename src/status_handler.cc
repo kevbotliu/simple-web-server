@@ -6,8 +6,7 @@ RequestHandler* StatusHandler::create(const NginxConfig& config, const std::stri
 }
 
 std::unique_ptr<Reply> StatusHandler::HandleRequest(const Request& request) {
-	if (!request.is_valid()) return std::unique_ptr<Reply>(nullptr);
-	if (request.get_method() != "GET") return std::unique_ptr<Reply>(nullptr);
+	if (request.get_method() != "GET") return std::unique_ptr<Reply>(new Reply(false));
 
 	ReplyArgs args;
 	args.headers.push_back(std::make_pair("Content-type", "text/plain"));

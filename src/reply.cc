@@ -20,6 +20,19 @@ Reply::Reply(ReplyArgs args)
 	body_ = args.body;
 }
 
+Reply::Reply(bool is_default=true) 
+	: valid_(true) {
+	version_ = "HTTP/1.1";
+	if (is_default) {
+		status_ = 200;
+		body_ = "";
+	}
+	else {
+		status_ = 404;
+		body_ = "404 Not Found";
+	}
+}
+
 int Reply::get_status_code() {return status_;}
 
 std::string Reply::to_string() {
