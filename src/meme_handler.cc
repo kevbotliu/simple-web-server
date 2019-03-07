@@ -13,13 +13,10 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 			// return handleNew...
 		}
 		if (subpath.find("/view") == 0) {
-			// Testing id
-			// id will be received by the url parameter e.g. /meme/view?id=123456789
-			std::size_t pos = subpath.find("id=");
-			if (pos >= 0 && (pos+3) < subpath.length()){
-				std::string id_string = subpath.substr(pos+=3);
-				int id = std::stoi(id_string);
-				return handleView(id);
+			if (subpath.size() > 9 && subpath.find("?id=") == 5) {
+				std::string id_string = subpath.substr(9);
+				int id = atoi(id_string.c_str());
+				if (id) return handleView(id);
 			}
 		}
 		if (subpath.find("/list") == 0) {
@@ -42,7 +39,9 @@ std::unique_ptr<Reply> MemeHandler::handleView(int id) {
 	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
 	parser.Parse(filepath.c_str(), &meme_info);
 
-	std::string image_path, top_text, bottom_text;
+	std::string image_path = "";
+	std::string top_text = "";
+	std::string bottom_text = "";
 	for (auto statement : meme_info.statements_) {
 		if (std::stoi(statement->tokens_[0]) == id) {
 			for (auto child_statement : statement->child_block_->statements_) {
@@ -76,6 +75,11 @@ std::unique_ptr<Reply> MemeHandler::handleView(int id) {
 				}
 			}
 		}
+	}
+	if (image_path == "" ||
+		top_text == "" ||
+		bottom_text == "") {
+		return std::unique_ptr<Reply>(new Reply(false));
 	}
 
 	ReplyArgs args;
