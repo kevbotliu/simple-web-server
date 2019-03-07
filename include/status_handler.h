@@ -2,6 +2,7 @@
 #define STATUS_HANDLER_H
 
 #include "request_handler.h"
+#include <boost/thread.hpp>
 #include "server.h"
 
 class StatusHandler : public RequestHandler {

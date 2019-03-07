@@ -41,7 +41,8 @@ void session::handle_read(const boost::system::error_code& error,
         rep = handler->HandleRequest(req);
         reply_str = rep->to_string();
 
-        RequestHistory::history.push_back(std::make_pair(req.get_path(), rep->get_status_code()));
+        RequestHistory rh;
+        rh.update_request_history(std::make_pair(req.get_path(), rep->get_status_code()));
       }
       else std::cerr << "Malformed request received.\n";
 

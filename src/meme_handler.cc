@@ -1,6 +1,7 @@
 #include "meme_handler.h"
 #include <numeric>
 
+
 RequestHandler* MemeHandler::create(const NginxConfig& config, const std::string& root_path) {
 	return new MemeHandler(config, root_path);
 }
@@ -37,7 +38,10 @@ std::unique_ptr<Reply> MemeHandler::handleView(int id) {
 	NginxConfig meme_info;
 	NginxConfigParser parser;
 	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
+
+	mutex.lock();
 	parser.Parse(filepath.c_str(), &meme_info);
+	mutex.unlock();
 
 	std::string image_path = "";
 	std::string top_text = "";
@@ -102,8 +106,10 @@ std::unique_ptr<Reply> MemeHandler::handleList() {
 	NginxConfig meme_info;
 	NginxConfigParser parser;
 	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
-	parser.Parse(filepath.c_str(), &meme_info);
 
+	mutex.lock();
+	parser.Parse(filepath.c_str(), &meme_info);
+	mutex.unlock();
 
 	ReplyArgs args;
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));

@@ -8,11 +8,14 @@ RequestHandler* StatusHandler::create(const NginxConfig& config, const std::stri
 std::unique_ptr<Reply> StatusHandler::HandleRequest(const Request& request) {
 	if (request.get_method() != "GET") return std::unique_ptr<Reply>(new Reply(false));
 
+	RequestHistory rh;
+	std::vector<std::pair<std::string, int>> req_hist = rh.get_request_history();
+
 	ReplyArgs args;
 	args.headers.push_back(std::make_pair("Content-type", "text/plain"));
-	args.body += "Number of requests received: " + std::to_string(RequestHistory::history.size()) + "\n\n";
+	args.body += "Number of requests received: " + std::to_string(req_hist.size()) + "\n\n";
 	args.body += "Received requests:\n";
-	for (auto req : RequestHistory::history) {
+	for (auto req : req_hist) {
 		args.body += req.first + ", " + std::to_string(req.second) + "\n";
 	}
 	args.body += "\n";
