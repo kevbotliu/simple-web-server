@@ -20,7 +20,12 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 	if (subpath.find("/view") == 0) {
 		// Testing id
 		// id will be received by the url parameter e.g. /meme/view?id=123456789
-		return handleView(123456789);
+		std::size_t pos = subpath.find("id=");
+		if (pos >= 0 && (pos+3) < subpath.length()){
+			std::string id_string = subpath.substr(pos+=3);
+			int id = std::stoi(id_string);
+			return handleView(id);
+		}
 	}
 	if (subpath.find("/list") == 0) {
 		return handleList();
