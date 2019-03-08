@@ -18,5 +18,6 @@ private:
 
 	std::unique_ptr<Reply> handleView(int id);
 	std::unique_ptr<Reply> handleList();
+	std::unique_ptr<Reply> handleNew();
 };
 #endif

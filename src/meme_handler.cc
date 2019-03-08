@@ -1,5 +1,9 @@
 #include "meme_handler.h"
 #include <numeric>
+#include <streambuf>
+#include <fstream>
+#include <string>
+#include "logger.h"
 
 
 RequestHandler* MemeHandler::create(const NginxConfig& config, const std::string& root_path) {
@@ -34,6 +38,7 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 	return std::unique_ptr<Reply>(new Reply(false));
 }
 
+// Handle viewing individual memes.
 std::unique_ptr<Reply> MemeHandler::handleView(int id) {
 	NginxConfig meme_info;
 	NginxConfigParser parser;
