@@ -32,7 +32,28 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 
 	if (request.get_method() == "POST") {
 		if (subpath.find("/create") == 0) {
-			// Do this...
+			std::string body = request.get_body();
+			int namePos, andPos;
+
+			// Credits for replacing chars: https://stackoverflow.com/questions/2896600/how-to-replace-all-occurrences-of-a-character-in-string
+
+			// Extract meme name
+			namePos = body.find("memeselect=");
+			andPos = body.find("&", namePos);
+			std::string memeName = body.substr(namePos + 11, andPos - (namePos + 11));
+
+			// Extract top text
+			namePos = body.find("top=");
+			andPos = body.find("&", namePos);
+			std::string topText = body.substr(namePos + 4, andPos - (namePos + 4));
+			std::replace(topText.begin(), topText.end(), '+', ' ');
+
+			// Extract bottom text
+			namePos = body.find("bot=");
+			std::string botText = body.substr(namePos + 4);
+			std::replace(botText.begin(), botText.end(), '+', ' ');
+
+			return handleCreate(memeName, topText, botText);
 		}
 	}
 
@@ -145,6 +166,34 @@ std::unique_ptr<Reply> MemeHandler::handleList() {
 		std::string id = statement->tokens_[0];
 		page_body += "<li> <a href=\"/meme/view?id=" + id + "\"> " + id + " </a></li>";
 	}
+
+	args.body = page_link + page_body;
+
+	return std::unique_ptr<Reply>(new Reply(args));
+}
+
+std::unique_ptr<Reply> MemeHandler::handleCreate(std::string memeName, std::string topText, std::string botText) {
+
+	// Write that information to the file
+	NginxConfig meme_info;
+	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
+
+	std::ofstream t;
+	t.open(filepath, std::fstream::app);
+	if (t.is_open()) {
+		t << "\n\n" << std::to_string(rand() % 1000000000) << " {\n\t";
+		t << "image " << memeName << ";\n\t";
+		t << "top " << topText << ";\n\t";
+		t << "bottom " << botText << ";\n";
+		t << "}\n";
+	}
+
+	// Display a HTML confirmation
+	ReplyArgs args;
+	args.headers.push_back(std::make_pair("Content-type", "text/html"));
+
+	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
+	std::string page_body = "<body><h1>Meme saved!</h1></body>";
 
 	args.body = page_link + page_body;
 

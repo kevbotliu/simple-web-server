@@ -19,5 +19,7 @@ private:
 	std::unique_ptr<Reply> handleView(int id);
 	std::unique_ptr<Reply> handleList();
 	std::unique_ptr<Reply> handleNew();
+	std::unique_ptr<Reply> handleCreate(std::string memeName,
+		std::string topText, std::string botText);
 };
 #endif
