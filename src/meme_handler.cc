@@ -15,9 +15,7 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 
 	if (request.get_method() == "GET") {
 		// Personally I believe this should be the default
-		if (subpath.find("/new") == 0) {
-			return handleNew();
-		}
+		if (subpath.find("/new") == 0) return handleNew();
 		if (subpath.find("/view") == 0) {
 			if (subpath.size() > 9 && subpath.find("?id=") == 5) {
 				std::string id_string = subpath.substr(9);
@@ -25,9 +23,7 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 				if (id) return handleView(id);
 			}
 		}
-		if (subpath.find("/list") == 0) {
-			return handleList();
-		}
+		if (subpath.find("/list") == 0) return handleList();
 	}
 
 	if (request.get_method() == "POST") {
@@ -134,12 +130,12 @@ std::unique_ptr<Reply> MemeHandler::handleView(int id) {
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
-	std::string page_styles = "<style> body {display: flex; justify-content: center; position: relative;} span {color: black; font: 4em bold; text-transform: uppercase; font-family: 'Oswald', sans-serif; sans-serif; position: absolute; text-align: center; width: 100%;} #top {top: 0;} #bottom {bottom: 0;}</style>";
+	std::string page_styles = "<style> body {display: flex; justify-content: center; align-items: center; flex-direction: column;} span {color: white; font: 3em bold; text-transform: uppercase; font-family: 'Oswald', sans-serif; position: absolute; text-align: center; width: 100%;} #top {left: 0; top: 0;} #bottom {left: 0; bottom: 0;} div {position: relative;} img {min-width: 300px; min-height: 300px;}</style>";
 	std::string page_body = "<body>";
 	// page_body += "<img src=\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png\">";
-	page_body += "<img src=\"../static/" + image_path + "\">";
+	page_body += "<div><img src=\"../static/" + image_path + "\">";
 	page_body += "<span id=\"top\">" + top_text +"</span>";
-	page_body += "<span id=\"bottom\">" + bottom_text + "</span></body>";
+	page_body += "<span id=\"bottom\">" + bottom_text + "</span></div></body>";
 
 	args.body = page_link + page_styles + page_body;
 
@@ -178,6 +174,7 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(std::string memeName, std::stri
 	NginxConfig meme_info;
 	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
 
+	mutex.lock();
 	std::ofstream t;
 	t.open(filepath, std::fstream::app);
 	if (t.is_open()) {
@@ -187,6 +184,7 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(std::string memeName, std::stri
 		t << "bottom " << botText << ";\n";
 		t << "}\n";
 	}
+	mutex.unlock();
 
 	// Display a HTML confirmation
 	ReplyArgs args;
