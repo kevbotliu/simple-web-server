@@ -59,16 +59,18 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 // Handle creating memes
 std::unique_ptr<Reply> MemeHandler::handleNew() {
 	
-	std::string filepath = "../" + root_path_ + "/" + "memeform.html";
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "memeform.html";
 
 	ReplyArgs args;
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
 
 	// Credit: https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
+	mutex.lock();
 	std::ifstream t(filepath);
 	std::stringstream buffer;
 	buffer << t.rdbuf();
 	args.body = buffer.str();
+	mutex.unlock();
 
 	return std::unique_ptr<Reply>(new Reply(args));
 
@@ -77,7 +79,7 @@ std::unique_ptr<Reply> MemeHandler::handleNew() {
 std::unique_ptr<Reply> MemeHandler::handleView(int id) {
 	NginxConfig meme_info;
 	NginxConfigParser parser;
-	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes";
 
 	mutex.lock();
 	parser.Parse(filepath.c_str(), &meme_info);
@@ -145,7 +147,7 @@ std::unique_ptr<Reply> MemeHandler::handleView(int id) {
 std::unique_ptr<Reply> MemeHandler::handleList() {
 	NginxConfig meme_info;
 	NginxConfigParser parser;
-	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes";
 
 	mutex.lock();
 	parser.Parse(filepath.c_str(), &meme_info);
@@ -171,7 +173,7 @@ std::unique_ptr<Reply> MemeHandler::handleList() {
 std::unique_ptr<Reply> MemeHandler::handleCreate(std::string memeName, std::string topText, std::string botText) {
 	// Write that information to the file
 	NginxConfig meme_info;
-	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes";
 
 	srand(time(NULL));
 	std::string saved_id = std::to_string(rand() % 1000000000);

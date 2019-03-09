@@ -3,6 +3,7 @@
 
 #include "request_handler.h"
 #include "pathfinder.h"
+#include <boost/thread.hpp>
 
 class StaticHandler : public RequestHandler {
 public:
@@ -15,6 +16,8 @@ private:
 	std::string root_path_;
 	StaticHandler(const NginxConfig& config, std::string root_path) : config_(config), root_path_(root_path) {}
 	std::string ext;
+
+	boost::mutex mutex;
 
 	ReplyArgs build_response(const Request& request);
 };

@@ -28,6 +28,7 @@ ReplyArgs StaticHandler::build_response(const Request& request) {
 	pf.set_extension();
 	std::string full_path = pf.find_full_path(config_.server_root_path, root_path_);
 
+	mutex.lock();
 	if (access(full_path.c_str(), F_OK) != -1) {
 
 		std::pair<std::string, std::string> header = std::make_pair("Content-type", pf.get_extension());
@@ -48,6 +49,7 @@ ReplyArgs StaticHandler::build_response(const Request& request) {
 		args.status_code = 404;
 		args.body = "404 Not Found";
 	}
+	mutex.unlock();
 	
 	return args;
 }
