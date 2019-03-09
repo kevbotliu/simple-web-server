@@ -174,11 +174,13 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(std::string memeName, std::stri
 	NginxConfig meme_info;
 	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
 
+	std::string saved_id = std::to_string(rand() % 1000000000);
+
 	mutex.lock();
 	std::ofstream t;
 	t.open(filepath, std::fstream::app);
 	if (t.is_open()) {
-		t << "\n\n" << std::to_string(rand() % 1000000000) << " {\n\t";
+		t << "\n\n" << saved_id << " {\n\t";
 		t << "image " << memeName << ";\n\t";
 		t << "top " << topText << ";\n\t";
 		t << "bottom " << botText << ";\n";
@@ -191,7 +193,8 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(std::string memeName, std::stri
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
-	std::string page_body = "<body><h1>Meme saved!</h1></body>";
+	std::string page_body = "<body><h1>Meme saved with id: ";
+	page_body += "<a href=\"/meme/view?id=" + saved_id + "\">" + saved_id + "</a></h1></body>";
 
 	args.body = page_link + page_body;
 
