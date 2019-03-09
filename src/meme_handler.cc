@@ -169,11 +169,11 @@ std::unique_ptr<Reply> MemeHandler::handleList() {
 }
 
 std::unique_ptr<Reply> MemeHandler::handleCreate(std::string memeName, std::string topText, std::string botText) {
-
 	// Write that information to the file
 	NginxConfig meme_info;
 	std::string filepath = "../" + root_path_ + "/" + "saved_memes";
 
+	srand(time(NULL));
 	std::string saved_id = std::to_string(rand() % 1000000000);
 
 	mutex.lock();
