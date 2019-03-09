@@ -32,7 +32,7 @@ class NginxConfig {
   void extractHandlerInfo();
 
   short port = 1;
-  std::string server_root_path = "./";
+  std::string server_root_path = "/usr/src/projects/";
   int num_threads = 1;
   std::vector<HandlerBlock> handler_blocks;
 };

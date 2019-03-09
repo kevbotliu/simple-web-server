@@ -7,11 +7,13 @@
 class Pathfinder {
 
 public:
-	Pathfinder(std::string path);
-	std::string findFullPath(std::string path, std::string root_path_);
+	Pathfinder(std::string path)  : path_(path) {}
+	std::string find_full_path(std::string server_root_path, std::string block_root_path);
+	std::string get_extension() { return ext_; }
+	void set_extension();
 private:
-	std::string ext;
-	void setExtension(std::string path);
+	std::string path_;
+	std::string ext_;
 };
 
 #endif

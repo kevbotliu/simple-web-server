@@ -7,7 +7,7 @@
 
 
 RequestHandler* StaticHandler::create(const NginxConfig& config, const std::string& root_path) {
-	return new StaticHandler(root_path);
+	return new StaticHandler(config, root_path);
 }
 
 std::unique_ptr<Reply> StaticHandler::HandleRequest(const Request& request) {
@@ -19,24 +19,20 @@ std::unique_ptr<Reply> StaticHandler::HandleRequest(const Request& request) {
 	return std::unique_ptr<Reply>(new Reply(args));
 }
 
-ReplyArgs StaticHandler::build_response(const Request& request)
-{
+ReplyArgs StaticHandler::build_response(const Request& request) {
 	ReplyArgs args;
+
 	std::string path = request.get_path();
 
-	Pathfinder pathfinder(path);
-	std::string pathToCheck = pathfinder.findFullPath(path, root_path_);
+	Pathfinder pf(path);
+	pf.set_extension();
+	std::string full_path = pf.find_full_path(config_.server_root_path, root_path_);
 
-	if (access(pathToCheck.c_str(), F_OK) != -1) {
-		// resp_->set_version(req_->get_version());
-		// resp_->set_status(200);
-		// std::pair<std::string, std::string> header = std::make_pair("Content-type", ext);
-		// resp_->add_header(header);
+	if (access(full_path.c_str(), F_OK) != -1) {
 
-		std::pair<std::string, std::string> header = std::make_pair("Content-type", ext);
+		std::pair<std::string, std::string> header = std::make_pair("Content-type", pf.get_extension());
 		args.headers.push_back(header);
 
-		std::string full_path = pathfinder.findFullPath(path, root_path_);
 		std::ifstream f(full_path.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
 			
 		std::streampos mSize = f.tellg();
@@ -45,11 +41,6 @@ ReplyArgs StaticHandler::build_response(const Request& request)
 		f.read(mBuffer, mSize);
 		f.close();
 
-		// resp_->set_version(req_->get_version());
-		// resp_->set_status(200);
-		// std::pair<std::string, std::string> header = std::make_pair("Content-type", ext);
-		// resp_->add_header(header);
-		// resp_->set_body(std::string(mBuffer, mSize));
 		args.body = std::string(mBuffer, mSize);
 		delete mBuffer;
 	}

@@ -11,8 +11,9 @@ public:
 	std::unique_ptr<Reply> HandleRequest(const Request& request) override;
 
 private:
+	NginxConfig config_;
 	std::string root_path_;
-	StaticHandler(std::string root_path) : root_path_(root_path) {}
+	StaticHandler(const NginxConfig& config, std::string root_path) : config_(config), root_path_(root_path) {}
 	std::string ext;
 
 	ReplyArgs build_response(const Request& request);
