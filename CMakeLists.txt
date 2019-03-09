@@ -107,6 +107,10 @@ target_link_libraries(echo_handler_test request_lib reply_lib echo_handler_lib g
 add_executable(static_handler_test tests/static_handler_test.cc)
 target_link_libraries(static_handler_test static_handler_lib config_parser_lib request_lib reply_lib gtest_main Boost::system)
 
+add_executable(meme_handler_test tests/meme_handler_test.cc)
+target_link_libraries(meme_handler_test meme_handler_lib config_parser_lib request_lib reply_lib gtest_main Boost::system)
+
+
 add_executable(proxy_handler_test tests/proxy_handler_test.cc)
 target_link_libraries(proxy_handler_test request_lib reply_lib proxy_handler_lib config_parser_lib gtest_main Boost::system)
 
@@ -120,6 +124,7 @@ gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/te
 # gtest_discover_tests(dispatcher_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(meme_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(proxy_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 
@@ -149,6 +154,7 @@ generate_coverage_report(
 		request_test
 		reply_test
 		static_handler_test
+		meme_handler_test
 		# dispatcher_test
 		echo_handler_test
 		proxy_handler_test
