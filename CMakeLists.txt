@@ -105,7 +105,7 @@ add_executable(echo_handler_test tests/echo_handler_test.cc)
 target_link_libraries(echo_handler_test request_lib reply_lib echo_handler_lib gtest_main Boost::system)
 
 add_executable(static_handler_test tests/static_handler_test.cc)
-target_link_libraries(static_handler_test static_handler_lib  request_lib reply_lib gtest_main Boost::system)
+target_link_libraries(static_handler_test static_handler_lib config_parser_lib request_lib reply_lib gtest_main Boost::system)
 
 add_executable(proxy_handler_test tests/proxy_handler_test.cc)
 target_link_libraries(proxy_handler_test request_lib reply_lib proxy_handler_lib config_parser_lib gtest_main Boost::system)
