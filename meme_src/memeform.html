@@ -27,7 +27,7 @@
     	Just pick a meme, enter top text, enter bottom text, and click "Create"!
     </p>
 
-    <form action="create" method="POST">
+    <form action="/meme/create" method="POST">
 	    <div class="form-group">
 		    <label>Choose a meme!</label>
 		    <select class="custom-select" name="memeselect">
@@ -37,8 +37,8 @@
 	    </div>
 	    <div class="form-group">
 		    <label>Add some text!</label>
-		    <input class="form-control" name="top" placeholder="Top text">
-        	    <input class="form-control" name="bot" placeholder="Bottom text">
+		    <input class="form-control" name="top" placeholder="Top text" required='required'>
+        	    <input class="form-control" name="bot" placeholder="Bottom text" required='required'>
 	    </div>
 	    <button type="submit" class="btn btn-primary">Create</button>
     </form>

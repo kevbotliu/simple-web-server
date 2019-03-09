@@ -53,7 +53,7 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 		}
 	}
 
-	return std::unique_ptr<Reply>(new Reply(false));
+	return handleNew();
 }
 
 // Handle creating memes
