@@ -3,6 +3,7 @@
 #include <streambuf>
 #include <fstream>
 #include <string>
+#include <sqlite3.h>
 #include "logger.h"
 #include <boost/algorithm/string.hpp>
 
@@ -64,7 +65,7 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 
 // Handle creating memes
 std::unique_ptr<Reply> MemeHandler::handleNew() {
-	
+
 	std::string filepath = config_.server_root_path + root_path_ + "/" + "memeform.html";
 
 	ReplyArgs args;
@@ -81,6 +82,7 @@ std::unique_ptr<Reply> MemeHandler::handleNew() {
 	return std::unique_ptr<Reply>(new Reply(args));
 
 }
+
 // Handle viewing individual memes.
 std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 	// Param guard
@@ -90,56 +92,58 @@ std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 
 	int id = atoi(params["id"].c_str());
 
-	NginxConfig meme_info;
-	NginxConfigParser parser;
-	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes";
+	// This website was a great help with SQL stuff: https://www.tutorialspoint.com/sqlite/sqlite_c_cpp.htm
+	// And this is for stepwise SQLite: https://stackoverflow.com/questions/3957343/how-to-read-data-from-sqlite-database
 
-	mutex.lock();
-	parser.Parse(filepath.c_str(), &meme_info);
-	mutex.unlock();
+	sqlite3 *meme_db;
+	int rc;
+	sqlite3_stmt* stmt;
+	bool found = false;
 
 	std::string image_path = "";
 	std::string top_text = "";
 	std::string bottom_text = "";
-	for (auto statement : meme_info.statements_) {
-		if (std::stoi(statement->tokens_[0]) == id) {
-			for (auto child_statement : statement->child_block_->statements_) {
-				if (child_statement->tokens_.size() == 2 &&
-					child_statement->tokens_[0] == "image") {
-					image_path = child_statement->tokens_[1];
-				}
-				if (child_statement->tokens_.size() >= 2 &&
-					child_statement->tokens_[0] == "top") {
-					bool first = true;
-					for (const auto &piece : child_statement->tokens_) {
-						if (first) {
-							first = false;
-							continue;
-						}
-						top_text += piece + " ";
-					}
-					top_text = top_text.substr(0, top_text.length()-1);
-				}
-				if (child_statement->tokens_.size() >= 2 &&
-					child_statement->tokens_[0] == "bottom") {
-					bool first = true;
-					for (const auto &piece : child_statement->tokens_) {
-						if (first) {
-							first = false;
-							continue;
-						}
-						bottom_text += piece + " ";
-					}
-					bottom_text = bottom_text.substr(0, bottom_text.length()-1);
-				}
-			}
-		}
-	}
-	if (image_path == "" ||
-		top_text == "" ||
-		bottom_text == "") {
+
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes.db";
+
+	mutex.lock();
+
+	// Open SQL database
+	rc = sqlite3_open(filepath.c_str(), &meme_db);
+	if (rc) { // Failed opening
+		mutex.unlock();
 		return std::unique_ptr<Reply>(new Reply(false));
 	}
+
+	// Execute SQL statement for selection
+	std::string sql_exec = "SELECT * from MEMES";
+	if (sqlite3_prepare_v2(meme_db, sql_exec.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+		sqlite3_close(meme_db);
+		sqlite3_finalize(stmt);
+		mutex.unlock();
+		return std::unique_ptr<Reply>(new Reply(false));		
+	}
+
+	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+		if (sqlite3_column_int(stmt, 0) == id) {
+			image_path = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)));
+			top_text = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)));
+			bottom_text = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)));
+			found = true;
+			break;
+		}
+	}
+
+	if ( !(rc == SQLITE_DONE || rc == SQLITE_ROW) || found == false) {
+		mutex.unlock();
+		return std::unique_ptr<Reply>(new Reply(false));		
+	}
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(meme_db);
+
+	mutex.unlock();
+
 
 	ReplyArgs args;
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
@@ -164,13 +168,7 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 	// 	return std::unique_ptr<Reply>(new Reply(false));
 	// }
 
-	NginxConfig meme_info;
-	NginxConfigParser parser;
-	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes";
-
-	mutex.lock();
-	parser.Parse(filepath.c_str(), &meme_info);
-	mutex.unlock();
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes.db";
 
 	ReplyArgs args;
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
@@ -185,16 +183,45 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 	page_body += "<input type=\"submit\" value=\"Search\">";
 	page_body += "</form>";
 
-	for (auto statement : meme_info.statements_) {
-		std::string id = statement->tokens_[0];
+	sqlite3 *meme_db;
+	int rc;
+	sqlite3_stmt* stmt;
 
+	mutex.lock();
 
-		std::cout << statement->child_block_->statements_[0]->tokens_[0] << " " << statement->child_block_->statements_[1]->tokens_[0] << " " << statement->child_block_->statements_[2]->tokens_[0] << "\n";
-
-
-
-		page_body += "<li> <a href=\"/meme/view?id=" + id + "\"> " + id + " </a></li>";
+	// Open SQL database
+	rc = sqlite3_open(filepath.c_str(), &meme_db);
+	if (rc) { // Failed opening
+		mutex.unlock();
+		return std::unique_ptr<Reply>(new Reply(false));
 	}
+
+	// Execute SQL statement for list
+	std::string sql_exec = "SELECT * from MEMES";
+	if (sqlite3_prepare_v2(meme_db, sql_exec.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+		sqlite3_close(meme_db);
+		sqlite3_finalize(stmt);
+		mutex.unlock();	
+		return std::unique_ptr<Reply>(new Reply(false));	
+	}
+
+	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+
+		int id = sqlite3_column_int(stmt, 0);
+		page_body += "<li> <a href=\"/meme/view?id=" + std::to_string(id) + "\"> " + std::to_string(id) + " </a></li>";
+
+		std::cout << sqlite3_column_text(stmt, 1) << " " << sqlite3_column_text(stmt, 2) << " " << sqlite3_column_text(stmt, 3) << "\n";
+	}
+
+	if (rc != SQLITE_DONE) {
+		mutex.unlock();
+		return std::unique_ptr<Reply>(new Reply(false));		
+	}
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(meme_db);
+
+	mutex.unlock();
 
 	args.body = page_link + page_body;
 
@@ -202,6 +229,7 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 }
 
 std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
+
 	// Param guard
 	if (params.find("memeselect") == params.end() ||
 		params.find("top") == params.end() ||
@@ -214,22 +242,48 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
 	std::string botText = params["bot"];
 
 	// Write that information to the file
-	NginxConfig meme_info;
-	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes";
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes.db";
 
 	srand(time(NULL));
 	std::string saved_id = std::to_string(rand() % 1000000000);
 
+	sqlite3 *meme_db;
+	int rc;
+	sqlite3_stmt* stmt;
+
 	mutex.lock();
-	std::ofstream t;
-	t.open(filepath, std::fstream::app);
-	if (t.is_open()) {
-		t << "\n\n" << saved_id << " {\n\t";
-		t << "image " << memeName << ";\n\t";
-		t << "top " << topText << ";\n\t";
-		t << "bottom " << botText << ";\n";
-		t << "}\n";
+
+	// Open SQL database
+	rc = sqlite3_open(filepath.c_str(), &meme_db);
+	if (rc) { // Failed opening
+		mutex.unlock();
+		return std::unique_ptr<Reply>(new Reply(false));
 	}
+
+	// Execute SQL statement for list
+	std::string sql_exec = "INSERT INTO MEMES VALUES ("
+		+ saved_id + ", "
+		+ '"' + memeName + '"' + ", "
+		+ '"' + topText + '"' + ", "
+		+ '"' + botText + '"' + ")";
+
+	if (sqlite3_prepare_v2(meme_db, sql_exec.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+		sqlite3_close(meme_db);
+		sqlite3_finalize(stmt);
+		mutex.unlock();	
+		return std::unique_ptr<Reply>(new Reply(false));	
+	}
+
+	rc = sqlite3_step(stmt);
+
+	if (rc != SQLITE_DONE) {
+		mutex.unlock();
+		return std::unique_ptr<Reply>(new Reply(false));		
+	}
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(meme_db);
+
 	mutex.unlock();
 
 	// Display a HTML confirmation
@@ -244,3 +298,5 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
 
 	return std::unique_ptr<Reply>(new Reply(args));
 }
+
+

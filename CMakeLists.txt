@@ -54,6 +54,7 @@ add_library(static_handler_lib src/static_handler.cc)
 target_link_libraries(static_handler_lib pathfinder_lib)
 
 add_library(meme_handler_lib src/meme_handler.cc)
+target_link_libraries(meme_handler_lib sqlite3)
 
 add_library(dispatcher_lib src/dispatcher.cc)
 target_link_libraries(dispatcher_lib pathfinder_lib)
