@@ -183,6 +183,8 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 	page_body += "<input type=\"submit\" value=\"Search\">";
 	page_body += "</form>";
 
+	std::string page_list = "<ul>";
+
 	sqlite3 *meme_db;
 	int rc;
 	sqlite3_stmt* stmt;
@@ -223,7 +225,9 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 
 	mutex.unlock();
 
-	args.body = page_link + page_body;
+	page_list += "</ul>";
+
+	args.body = page_link + page_body + page_list;
 
 	return std::unique_ptr<Reply>(new Reply(args));
 }

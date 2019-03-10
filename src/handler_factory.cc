@@ -5,6 +5,7 @@
 #include "not_found_handler.h"
 #include "proxy_handler.h"
 #include "meme_handler.h"
+#include "health_handler.h"
 #include "pathfinder.h"
 
 std::unique_ptr<RequestHandler> HandlerFactory::createByName(const std::string& name, const NginxConfig& config, const std::string& root_path) {
@@ -13,6 +14,7 @@ std::unique_ptr<RequestHandler> HandlerFactory::createByName(const std::string& 
     if (name == "status") return std::unique_ptr<RequestHandler>(StatusHandler::create(config, root_path));
     if (name == "proxy") return std::unique_ptr<RequestHandler>(ProxyHandler::create(config, root_path));
     if (name == "meme") return std::unique_ptr<RequestHandler>(MemeHandler::create(config, root_path));
+    if (name == "health") return std::unique_ptr<RequestHandler>(HealthHandler::create(config, root_path));
     
     return std::unique_ptr<RequestHandler>(NotFoundHandler::create(config, root_path));
 }

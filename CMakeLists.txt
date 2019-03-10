@@ -46,6 +46,7 @@ add_library(pathfinder_lib src/pathfinder.cc)
 add_library(echo_handler_lib src/echo_handler.cc)
 add_library(status_handler_lib src/status_handler.cc)
 add_library(not_found_handler_lib src/not_found_handler.cc)
+add_library(health_handler_lib src/health_handler.cc)
 
 add_library(proxy_handler_lib src/proxy_handler.cc)
 target_link_libraries(proxy_handler_lib Boost::log_setup Boost::log)
@@ -81,6 +82,7 @@ target_link_libraries(
 	status_handler_lib
 	meme_handler_lib
 	not_found_handler_lib
+	health_handler_lib
 	config_parser_lib
 	Boost::system
 	logger_lib
@@ -150,6 +152,7 @@ generate_coverage_report(
 		proxy_handler_lib
 		shared_lib
 		not_found_handler_lib
+		health_handler_lib
 	TESTS
 		config_parser_test
 		request_test

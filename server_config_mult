@@ -31,6 +31,9 @@ handler meme {
 	root meme_src;
 }
 
+handler health {
+	location /health;
+}
 
 
 

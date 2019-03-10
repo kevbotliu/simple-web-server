@@ -27,15 +27,15 @@ TEST_F(MemeHandlerTest, MemeListValidTest) {
     EXPECT_TRUE(success);
 }
 
-TEST_F(MemeHandlerTest, MemeListStatusCodeTest) {
-    ASSERT_TRUE(setup_config());
-    std::string s = "GET /meme/list HTTP/1.1\r\n\r\n";
-    const Request *req = new Request(s);
-    std::string root_path = "/";
-    success = (MemeHandler::create(config, root_path)
-                ->HandleRequest(*req)->get_status_code() == 200);
-    EXPECT_TRUE(success);
-}
+// TEST_F(MemeHandlerTest, MemeListStatusCodeTest) {
+//     ASSERT_TRUE(setup_config());
+//     std::string s = "GET /meme/list HTTP/1.1\r\n\r\n";
+//     const Request *req = new Request(s);
+//     std::string root_path = "/";
+//     success = (MemeHandler::create(config, root_path)
+//                 ->HandleRequest(*req)->get_status_code() == 200);
+//     EXPECT_TRUE(success);
+// }
 
 TEST_F(MemeHandlerTest, MemeNewValidTest) {
     ASSERT_TRUE(setup_config());
