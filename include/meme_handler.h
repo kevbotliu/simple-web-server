@@ -5,6 +5,8 @@
 #include "request_handler.h"
 #include "server.h"
 
+typedef std::map<std::string,std::string> ParamMap;
+
 class MemeHandler : public RequestHandler {
 public:
 	static RequestHandler* create(const NginxConfig& config, const std::string& root_path);
@@ -16,10 +18,12 @@ private:
 
 	boost::mutex mutex;
 
-	std::unique_ptr<Reply> handleView(int id);
-	std::unique_ptr<Reply> handleList();
+	ParamMap extract_params(const Request& request);
+
 	std::unique_ptr<Reply> handleNew();
-	std::unique_ptr<Reply> handleCreate(std::string memeName,
-		std::string topText, std::string botText);
+	std::unique_ptr<Reply> handleCreate(ParamMap& params);
+	std::unique_ptr<Reply> handleView(ParamMap& params);
+	std::unique_ptr<Reply> handleList(ParamMap& params);
+	
 };
 #endif

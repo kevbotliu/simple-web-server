@@ -4,56 +4,62 @@
 #include <fstream>
 #include <string>
 #include "logger.h"
+#include <boost/algorithm/string.hpp>
 
 
 RequestHandler* MemeHandler::create(const NginxConfig& config, const std::string& root_path) {
 	return new MemeHandler(config, root_path);
 }
 
+ParamMap MemeHandler::extract_params(const Request& request) {
+	ParamMap params;
+
+	std::string param_str = "";
+	std::string method = request.get_method();
+	std::string path = request.get_path();
+	if (method == "GET") {
+		std::vector<std::string> tokens;
+	    boost::split(tokens, path, boost::is_any_of("?"));
+
+	    if (tokens.size() > 1) param_str = tokens[1];
+	}
+	if (method == "POST") {
+		param_str = request.get_body();
+	}
+
+    std::vector<std::string> key_pairs;
+	boost::split(key_pairs, param_str, boost::is_any_of("&"));
+
+	for (auto key_pair : key_pairs) {
+		auto ind = key_pair.find('=');
+		if (ind != std::string::npos) {
+			params.insert(std::make_pair(key_pair.substr(0, ind), key_pair.substr(ind+1)));
+		}
+	}
+
+	return params;
+}
+
+
+
 std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {	
 	std::string subpath = request.get_path().erase(0, 5);
+	ParamMap params = extract_params(request);
 
 	if (request.get_method() == "GET") {
-		// Personally I believe this should be the default
-		if (subpath.find("/new") == 0) return handleNew();
-		if (subpath.find("/view") == 0) {
-			if (subpath.size() > 9 && subpath.find("?id=") == 5) {
-				std::string id_string = subpath.substr(9);
-				int id = atoi(id_string.c_str());
-				if (id) return handleView(id);
-			}
-		}
-		if (subpath.find("/list") == 0) return handleList();
+
+		if (subpath.empty() ||
+			subpath == "/" ||
+			subpath.find("/new") == 0) return handleNew();
+		if (subpath.find("/view") == 0) return handleView(params);
+		if (subpath.find("/list") == 0) return handleList(params);
 	}
 
 	if (request.get_method() == "POST") {
-		if (subpath.find("/create") == 0) {
-			std::string body = request.get_body();
-			int namePos, andPos;
-
-			// Credits for replacing chars: https://stackoverflow.com/questions/2896600/how-to-replace-all-occurrences-of-a-character-in-string
-
-			// Extract meme name
-			namePos = body.find("memeselect=");
-			andPos = body.find("&", namePos);
-			std::string memeName = body.substr(namePos + 11, andPos - (namePos + 11));
-
-			// Extract top text
-			namePos = body.find("top=");
-			andPos = body.find("&", namePos);
-			std::string topText = body.substr(namePos + 4, andPos - (namePos + 4));
-			std::replace(topText.begin(), topText.end(), '+', ' ');
-
-			// Extract bottom text
-			namePos = body.find("bot=");
-			std::string botText = body.substr(namePos + 4);
-			std::replace(botText.begin(), botText.end(), '+', ' ');
-
-			return handleCreate(memeName, topText, botText);
-		}
+		if (subpath.find("/create") == 0) return handleCreate(params);
 	}
 
-	return handleNew();
+	return std::unique_ptr<Reply>(new Reply(false));;
 }
 
 // Handle creating memes
@@ -76,7 +82,14 @@ std::unique_ptr<Reply> MemeHandler::handleNew() {
 
 }
 // Handle viewing individual memes.
-std::unique_ptr<Reply> MemeHandler::handleView(int id) {
+std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
+	// Param guard
+	if (params.find("id") == params.end()) {
+		return std::unique_ptr<Reply>(new Reply(false));
+	}
+
+	int id = atoi(params["id"].c_str());
+
 	NginxConfig meme_info;
 	NginxConfigParser parser;
 	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes";
@@ -144,7 +157,13 @@ std::unique_ptr<Reply> MemeHandler::handleView(int id) {
 	return std::unique_ptr<Reply>(new Reply(args));
 }
 
-std::unique_ptr<Reply> MemeHandler::handleList() {
+std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
+
+	// Check search term
+	// if (params.find("search") == params.end()) {
+	// 	return std::unique_ptr<Reply>(new Reply(false));
+	// }
+
 	NginxConfig meme_info;
 	NginxConfigParser parser;
 	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes";
@@ -160,8 +179,20 @@ std::unique_ptr<Reply> MemeHandler::handleList() {
 	// std::string page_styles = "<style> body {display: flex; justify-content: center; position: relative;}</style>";
 	std::string page_body = "<body>";
 
+	page_body += "<form action=\"/meme/list\" method=\"post\">";
+	page_body += "<label>Search: </label>";
+	page_body += "<input type=\"text\" name=\"term\">";
+	page_body += "<input type=\"submit\" value=\"Search\">";
+	page_body += "</form>";
+
 	for (auto statement : meme_info.statements_) {
 		std::string id = statement->tokens_[0];
+
+
+		std::cout << statement->child_block_->statements_[0]->tokens_[0] << " " << statement->child_block_->statements_[1]->tokens_[0] << " " << statement->child_block_->statements_[2]->tokens_[0] << "\n";
+
+
+
 		page_body += "<li> <a href=\"/meme/view?id=" + id + "\"> " + id + " </a></li>";
 	}
 
@@ -170,7 +201,18 @@ std::unique_ptr<Reply> MemeHandler::handleList() {
 	return std::unique_ptr<Reply>(new Reply(args));
 }
 
-std::unique_ptr<Reply> MemeHandler::handleCreate(std::string memeName, std::string topText, std::string botText) {
+std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
+	// Param guard
+	if (params.find("memeselect") == params.end() ||
+		params.find("top") == params.end() ||
+		params.find("bot") == params.end()) {
+		return std::unique_ptr<Reply>(new Reply(false));
+	}
+
+	std::string memeName = params["memeselect"];
+	std::string topText = params["top"];
+	std::string botText = params["bot"];
+
 	// Write that information to the file
 	NginxConfig meme_info;
 	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes";
