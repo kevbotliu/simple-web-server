@@ -57,13 +57,9 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 	else if (subpath.find("/view") == 0) rep = handleView(params);
 	else if (subpath.find("/list") == 0) rep = handleList(params);
 	else if (subpath.find("/delete") == 0) rep = handleDelete(params);
-
-	else {
-		rep = std::unique_ptr<Reply>(new Reply(false));
-	}
+	else rep = std::unique_ptr<Reply>(new Reply(false));
 	
 	std::string message = "Meme Handler::ResponseMetrics::Status Code:" + std::to_string(rep->get_status_code());
-
 	log.log(message, boost::log::trivial::info);
 
 	return rep;
@@ -183,13 +179,13 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 	ReplyArgs args;
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
 
-	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
-	std::string page_styles = "<style> body {display: flex; justify-content: center; align-items: center; position: relative;} form {padding-right: 60px;} ul {list-style: none; padding: 0 0 0 60px;}</style>";
+	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Open+Sans\" rel=\"stylesheet\"></head>";
+	std::string page_styles = "<style> body {font-family: 'Open Sans', sans-serif; display: flex; justify-content: center; align-items: center; flex-direction: column;} form {} ul {list-style: none; padding: 0;} li {padding: 4px; font-size: 1.2em; width: 100px; text-align: center;}</style>";
 	std::string page_body = "<body>";
 
-	page_body += "<form action=\"/meme/list\" method=\"post\">";
+	page_body += "<form action=\"/meme/list\" method=\"get\">";
 	page_body += "<label>Search: </label>";
-	page_body += "<input type=\"text\" name=\"search\">";
+	page_body += "<input type=\"text\" name=\"search\" value=\"" + search_term + "\">";
 	page_body += "<input type=\"submit\" value=\"Search\">";
 	page_body += "</form>";
 
@@ -219,10 +215,22 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 	sqlite3_bind_text(stmt, 2, search_term.c_str(), search_term.size(), SQLITE_STATIC);
 	sqlite3_bind_text(stmt, 3, search_term.c_str(), search_term.size(), SQLITE_STATIC);
 
+	int num_results = 0;
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		int id = sqlite3_column_int(stmt, 0);
 		page_list += "<li> <a href=\"/meme/view?id=" + std::to_string(id) + "\"> " + std::to_string(id) + " </a></li>";
+		num_results++;
 		// std::cout << sqlite3_column_text(stmt, 1) << " " << sqlite3_column_text(stmt, 2) << " " << sqlite3_column_text(stmt, 3) << "\n";
+	}
+
+	if (!search_term.empty() && num_results > 1) {
+		page_list = "<h4>Found " + std::to_string(num_results) + " results for \"" + search_term + "\"</h4>" + page_list;
+	}
+	else if (!search_term.empty() && num_results > 0) {
+		page_list = "<h4>Found " + std::to_string(num_results) + " result for \"" + search_term + "\"</h4>" + page_list;
+	}
+	else if (!search_term.empty() && !num_results) {
+		page_list = "<h4>No results found for \"" + search_term + "\"</h4>" + page_list;
 	}
 
 	sqlite3_finalize(stmt);
