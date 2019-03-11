@@ -3,6 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <iostream>
+#include "reply.h"
 
 session::session(boost::asio::io_service& io_service, Dispatcher* dispatcher)
     : socket_(io_service),
@@ -44,7 +45,13 @@ void session::handle_read(const boost::system::error_code& error,
         RequestHistory rh;
         rh.update_request_history(std::make_pair(req.get_path(), rep->get_status_code()));
       }
-      else std::cerr << "Malformed request received.\n";
+      else {
+        std::cerr << "Malformed request received.\n";
+        ReplyArgs args;
+        args.status_code = 400;
+        Reply rep = Reply(args);
+        reply_str = rep.to_string();
+      }
 
       boost::asio::async_write(socket_,
           boost::asio::buffer(reply_str, reply_str.length()),
