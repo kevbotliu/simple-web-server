@@ -47,20 +47,14 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 	std::string subpath = request.get_path().erase(0, 5);
 	ParamMap params = extract_params(request);
 
-	if (request.get_method() == "GET") {
-
-		if (subpath.empty() ||
-			subpath == "/" ||
-			subpath.find("/new") == 0) return handleNew();
-		if (subpath.find("/view") == 0) return handleView(params);
-		if (subpath.find("/list") == 0) return handleList(params);
-		if (subpath.find("/edit") == 0) return handleEdit();
-	}
-
-	if (request.get_method() == "POST") {
-		if (subpath.find("/create") == 0) return handleCreate(params);
-		if (subpath.find("/update") == 0) return handleUpdate(params);
-	}
+	if (subpath.empty() ||
+		subpath == "/" ||
+		subpath.find("/new") == 0) return handleNew();
+	if (subpath.find("/create") == 0) return handleCreate(params);
+	if (subpath.find("/edit") == 0) return handleEdit();
+	if (subpath.find("/update") == 0) return handleUpdate(params);
+	if (subpath.find("/view") == 0) return handleView(params);
+	if (subpath.find("/list") == 0) return handleList(params);
 
 	return std::unique_ptr<Reply>(new Reply(false));;
 }
@@ -167,11 +161,11 @@ std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 }
 
 std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
-
 	// Check search term
-	// if (params.find("search") == params.end()) {
-	// 	return std::unique_ptr<Reply>(new Reply(false));
-	// }
+	std::string search_term = "";
+	if (params.find("search") != params.end()) {
+		search_term = boost::algorithm::to_lower_copy(params["search"]);
+	}
 
 	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes.db";
 
@@ -179,50 +173,45 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
-	// std::string page_styles = "<style> body {display: flex; justify-content: center; position: relative;}</style>";
+	std::string page_styles = "<style> body {display: flex; justify-content: center; align-items: center; position: relative;} form {padding-right: 60px;} ul {list-style: none; padding: 0 0 0 60px;}</style>";
 	std::string page_body = "<body>";
 
 	page_body += "<form action=\"/meme/list\" method=\"post\">";
 	page_body += "<label>Search: </label>";
-	page_body += "<input type=\"text\" name=\"term\">";
+	page_body += "<input type=\"text\" name=\"search\">";
 	page_body += "<input type=\"submit\" value=\"Search\">";
 	page_body += "</form>";
 
 	std::string page_list = "<ul>";
 
-	sqlite3 *meme_db;
-	int rc;
-	sqlite3_stmt* stmt;
-
 	mutex.lock();
-
 	// Open SQL database
-	rc = sqlite3_open(filepath.c_str(), &meme_db);
-	if (rc) { // Failed opening
-		mutex.unlock();
-		return std::unique_ptr<Reply>(new Reply(false));
-	}
+	sqlite3 *meme_db;
+	int rc = sqlite3_open(filepath.c_str(), &meme_db);
+	if (rc) return std::unique_ptr<Reply>(new Reply(false));
 
 	// Execute SQL statement for list
-	std::string sql_exec = "SELECT * from MEMES";
-	if (sqlite3_prepare_v2(meme_db, sql_exec.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
-		sqlite3_close(meme_db);
+	sqlite3_stmt* stmt;
+	std::string query;
+	if (params.find("search") != params.end()) {
+		query = "SELECT * from MEMES WHERE instr(image, ?) > 0 OR instr(bottom_text, ?) > 0 OR instr(top_text, ?) > 0";
+	}
+	else query = "SELECT * from MEMES";
+	
+	if (sqlite3_prepare_v2(meme_db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
 		sqlite3_finalize(stmt);
-		mutex.unlock();	
+		sqlite3_close(meme_db);
 		return std::unique_ptr<Reply>(new Reply(false));	
 	}
 
+	sqlite3_bind_text(stmt, 1, search_term.c_str(), search_term.size(), SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 2, search_term.c_str(), search_term.size(), SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 3, search_term.c_str(), search_term.size(), SQLITE_STATIC);
+
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-
 		int id = sqlite3_column_int(stmt, 0);
-		page_body += "<li> <a href=\"/meme/view?id=" + std::to_string(id) + "\"> " + std::to_string(id) + " </a></li>";
-
-		std::cout << sqlite3_column_text(stmt, 1) << " " << sqlite3_column_text(stmt, 2) << " " << sqlite3_column_text(stmt, 3) << "\n";
-	}
-
-	if (rc != SQLITE_DONE) {
-		mutex.unlock();
-		return std::unique_ptr<Reply>(new Reply(false));		
+		page_list += "<li> <a href=\"/meme/view?id=" + std::to_string(id) + "\"> " + std::to_string(id) + " </a></li>";
+		// std::cout << sqlite3_column_text(stmt, 1) << " " << sqlite3_column_text(stmt, 2) << " " << sqlite3_column_text(stmt, 3) << "\n";
 	}
 
 	sqlite3_finalize(stmt);
@@ -232,7 +221,7 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 
 	page_list += "</ul>";
 
-	args.body = page_link + page_body + page_list;
+	args.body = page_link + page_styles + page_body + page_list;
 
 	return std::unique_ptr<Reply>(new Reply(args));
 }
@@ -246,9 +235,9 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
 		return std::unique_ptr<Reply>(new Reply(false));
 	}
 
-	std::string memeName = params["memeselect"];
-	std::string topText = params["top"];
-	std::string botText = params["bot"];
+	std::string memeName = boost::algorithm::to_lower_copy(params["memeselect"]);
+	std::string topText = boost::algorithm::to_lower_copy(params["top"]);
+	std::string botText = boost::algorithm::to_lower_copy(params["bot"]);
 
 	// Write that information to the file
 	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes.db";
