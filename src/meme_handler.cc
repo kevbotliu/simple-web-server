@@ -93,7 +93,13 @@ std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 		return std::unique_ptr<Reply>(new Reply(false));
 	}
 
-	int id = atoi(params["id"].c_str());
+	// Credit: https://stackoverflow.com/questions/4654636/how-to-determine-if-a-string-is-a-number-with-c
+	char *pEnd;
+	int id = strtol(params["id"].c_str(), &pEnd, 10);
+	if (*pEnd) {
+		// Conversion failed; NaN
+		return std::unique_ptr<Reply>(new Reply(false));		
+	}
 
 	// This website was a great help with SQL stuff: https://www.tutorialspoint.com/sqlite/sqlite_c_cpp.htm
 	// And this is for stepwise SQLite: https://stackoverflow.com/questions/3957343/how-to-read-data-from-sqlite-database
