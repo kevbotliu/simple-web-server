@@ -7,7 +7,6 @@
 #include "logger.h"
 #include <boost/algorithm/string.hpp>
 
-
 RequestHandler* MemeHandler::create(const NginxConfig& config, const std::string& root_path) {
 	return new MemeHandler(config, root_path);
 }
@@ -214,14 +213,14 @@ std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 	stringEscape(bottom_text);
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
-	std::string page_styles = "<style> body {display: flex; justify-content: center; align-items: center; flex-direction: column;} span {color: white; font: 3em bold; text-transform: uppercase; font-family: 'Oswald', sans-serif; position: absolute; text-align: center; width: 100%;} #top {left: 0; top: 0;} #bottom {left: 0; bottom: 0;} div {position: relative;} img {min-height: 75vh;}</style>";
+	std::string page_styles = "<style> body {display: flex; justify-content: center; align-items: center; flex-direction: column;} span {color: white; font: 3em bold; text-transform: uppercase; font-family: 'Oswald', sans-serif; position: absolute; text-align: center; width: 100%;} #top {left: 0; top: 0;} #bottom {left: 0; bottom: 0;} div {position: relative;} img {min-height: 75vh;} #container {display: flex; justify-content: space-around; padding: 20px; width: 140px;} #container > a {font-size: 1.2em; font-family: 'Open Sans', sans-serif;}</style>";
 	std::string page_body = "<body>";
 	// page_body += "<img src=\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png\">";
 	page_body += "<div><img src=\"../static/" + image_path + "\">";
 	page_body += "<span id=\"top\">" + top_text +"</span>";
 	page_body += "<span id=\"bottom\">" + bottom_text + "</span></div>";
-	page_body += "<div><a href=\"/meme/delete?id=" + std::to_string(id) + "\" onclick=\"return confirm('Are you sure?')\">Delete</a></div>";
-	page_body += "<a href=\"/meme/edit?id=" + meme_id + "&top=" + top_text + "&bot=" + bottom_text + "\">edit</a></h1></body>";
+	page_body += "<div id=\"container\"><a id=\"delete\" href=\"/meme/delete?id=" + std::to_string(id) + "\" onclick=\"return confirm('Are you sure?')\">delete</a>";
+	page_body += "<a id=\"edit\" href=\"/meme/edit?id=" + meme_id + "&top=" + top_text + "&bot=" + bottom_text + "\">edit</a></div></body>";
 
 
 	args.body = page_link + page_styles + page_body;
@@ -372,10 +371,12 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
+	std::string page_styles = "<style>body {font-family: 'Open Sans', sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center;}</style>";
 	std::string page_body = "<body><h1>Meme saved with id: ";
-	page_body += "<a href=\"/meme/view?id=" + saved_id + "\">" + saved_id + "</a><br><a href=\"/meme/list\">Click here to return to list!</a></h1></body>";
+	page_body += "<a href=\"/meme/view?id=" + saved_id + "\">" + saved_id + "</a></h1>";
+	page_body += "<a href=\"/meme/list\">Click here to return to list!</a></body>";
 
-	args.body = page_link + page_body;
+	args.body = page_link + page_styles + page_body;
 
 	return std::unique_ptr<Reply>(new Reply(args));
 }
@@ -460,10 +461,12 @@ std::unique_ptr<Reply> MemeHandler::handleUpdate(ParamMap& params) {
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
+	std::string page_styles = "<style>body {font-family: 'Open Sans', sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center;}</style>";
 	std::string page_body = "<body><h1>Meme updated with id: ";
-	page_body += "<a href=\"/meme/view?id=" + memeID + "\">" + memeID + "</a></h1></body>";
+	page_body += "<a href=\"/meme/view?id=" + memeID + "\">" + memeID + "</a></h1>";
+	page_body += "<a href=\"/meme/list\">Click here to return to list!</a></body>";
 
-	args.body = page_link + page_body;
+	args.body = page_link + page_styles + page_body;
 
 	return std::unique_ptr<Reply>(new Reply(args));
 }
@@ -510,9 +513,11 @@ std::unique_ptr<Reply> MemeHandler::handleDelete(ParamMap& params)
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
-	std::string page_body = "<body><h1>Meme deleted!</h1><a href=\"/meme/list\">Click here to return to list!</a></body>";
+	std::string page_styles = "<style>body {font-family: 'Open Sans', sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center;}</style>";
+	std::string page_body = "<body><h1>Meme deleted with id: " + std::to_string(id) + "</h1>";
+	page_body += "<a href=\"/meme/list\">Click here to return to list!</a></body>";
 
-	args.body = page_link + page_body;
+	args.body = page_link + page_styles + page_body;
 
 	return std::unique_ptr<Reply>(new Reply(args));
 }
