@@ -342,7 +342,8 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
 		+ saved_id + ", "
 		+ '"' + memeName + '"' + ", "
 		+ '"' + topText + '"' + ", "
-		+ '"' + botText + '"' + ")";
+		+ '"' + botText + '"' + ")";/*","
+		+ '"' + "asdf" + '"' + ")";*/
 
 	if (sqlite3_prepare_v2(meme_db, sql_exec.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
 		sqlite3_close(meme_db);
@@ -369,7 +370,7 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
 	std::string page_body = "<body><h1>Meme saved with id: ";
-	page_body += "<a href=\"/meme/view?id=" + saved_id + "\">" + saved_id + "</a></h1></body>";
+	page_body += "<a href=\"/meme/view?id=" + saved_id + "\">" + saved_id + "</a><br><a href=\"/meme/list\">Click here to return to list!</a></h1></body>";
 
 	args.body = page_link + page_body;
 
