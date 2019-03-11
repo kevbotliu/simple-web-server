@@ -12,6 +12,8 @@ RUN ctest --output-on_failure
 ### Deploy container ###
 FROM ubuntu:latest as deploy
 
+RUN apt-get update && apt-get install -y sqlite3 libsqlite3-dev
+
 # TODO(!): Copy server output binary to "."
 COPY --from=builder /usr/src/projects/build/bin/main .
 
