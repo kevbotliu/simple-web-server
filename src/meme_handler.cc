@@ -54,10 +54,12 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 			subpath.find("/new") == 0) return handleNew();
 		if (subpath.find("/view") == 0) return handleView(params);
 		if (subpath.find("/list") == 0) return handleList(params);
+		if (subpath.find("/edit") == 0) return handleEdit();
 	}
 
 	if (request.get_method() == "POST") {
 		if (subpath.find("/create") == 0) return handleCreate(params);
+		if (subpath.find("/update") == 0) return handleUpdate(params);
 	}
 
 	return std::unique_ptr<Reply>(new Reply(false));;
@@ -103,6 +105,7 @@ std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 	std::string image_path = "";
 	std::string top_text = "";
 	std::string bottom_text = "";
+	std::string meme_id = params["id"];
 
 	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes.db";
 
@@ -154,7 +157,9 @@ std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 	// page_body += "<img src=\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png\">";
 	page_body += "<div><img src=\"../static/" + image_path + "\">";
 	page_body += "<span id=\"top\">" + top_text +"</span>";
-	page_body += "<span id=\"bottom\">" + bottom_text + "</span></div></body>";
+	page_body += "<span id=\"bottom\">" + bottom_text + "</span></div>";
+	page_body += "<a href=\"/meme/edit?id=" + meme_id + "&top=" + top_text + "&bot=" + bottom_text + "\">edit</a></h1></body>";
+
 
 	args.body = page_link + page_styles + page_body;
 
@@ -303,4 +308,91 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
 	return std::unique_ptr<Reply>(new Reply(args));
 }
 
+std::unique_ptr<Reply> MemeHandler::handleEdit() {
+	
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "memeedit.html";
+
+	ReplyArgs args;
+	args.headers.push_back(std::make_pair("Content-type", "text/html"));
+
+	// Credit: https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
+	mutex.lock();
+	std::ifstream t(filepath);
+	std::stringstream buffer;
+	buffer << t.rdbuf();
+	args.body = buffer.str();
+	mutex.unlock();
+
+	return std::unique_ptr<Reply>(new Reply(args));
+
+}
+
+std::unique_ptr<Reply> MemeHandler::handleUpdate(ParamMap& params) {
+
+	// Param guard
+	if (params.find("memeselect") == params.end() ||
+		params.find("top") == params.end() ||
+		params.find("bot") == params.end() ||
+		params.find("id") == params.end()) {
+		return std::unique_ptr<Reply>(new Reply(false));
+	}
+
+	std::string memeName = params["memeselect"];
+	std::string topText = params["top"];
+	std::string botText = params["bot"];
+	std::string memeID = params["id"];
+
+	// Write that information to the file
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes.db";
+
+	sqlite3 *meme_db;
+	int rc;
+	sqlite3_stmt* stmt;
+
+	mutex.lock();
+
+	// Open SQL database
+	rc = sqlite3_open(filepath.c_str(), &meme_db);
+	if (rc) { // Failed opening
+		mutex.unlock();
+		return std::unique_ptr<Reply>(new Reply(false));
+	}
+
+	std::string sql_exec = "UPDATE memes SET top_text = \""
+		+ botText + "\", "
+		+ "bottom_text = \"" + topText + "\", "
+		+ "image = \"" + memeName
+		+ "\" WHERE meme_id = " + memeID;
+
+	if (sqlite3_prepare_v2(meme_db, sql_exec.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+		sqlite3_close(meme_db);
+		sqlite3_finalize(stmt);
+		mutex.unlock();	
+		return std::unique_ptr<Reply>(new Reply(false));
+	}
+
+	rc = sqlite3_step(stmt);
+
+	if (rc != SQLITE_DONE) {
+		mutex.unlock();
+		return std::unique_ptr<Reply>(new Reply(false));		
+	}
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(meme_db);
+
+	mutex.unlock();
+
+	// Display a HTML confirmation
+	ReplyArgs args;
+	args.headers.push_back(std::make_pair("Content-type", "text/html"));
+
+	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
+	std::string page_body = "<body><h1>Meme updated with id: ";
+	page_body += "<a href=\"/meme/view?id=" + memeID + "\">" + memeID + "</a></h1></body>";
+
+	args.body = page_link + page_body;
+
+	return std::unique_ptr<Reply>(new Reply(args));
+}
 
