@@ -453,7 +453,7 @@ std::unique_ptr<Reply> MemeHandler::handleDelete(ParamMap& params)
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
-	std::string page_body = "<body><h1>Meme deleted!</h1></body>";
+	std::string page_body = "<body><h1>Meme deleted!</h1><a href=\"/meme/list\">Click here to return to list!</a></body>";
 
 	args.body = page_link + page_body;
 
