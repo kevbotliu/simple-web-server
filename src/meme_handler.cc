@@ -256,7 +256,9 @@ std::unique_ptr<Reply> MemeHandler::handleCreate(ParamMap& params) {
 
 	std::string memeName = boost::algorithm::to_lower_copy(params["memeselect"]);
 	std::string topText = boost::algorithm::to_lower_copy(params["top"]);
+	std::replace(topText.begin(), topText.end(), '+', ' ');
 	std::string botText = boost::algorithm::to_lower_copy(params["bot"]);
+	std::replace(botText.begin(), botText.end(), '+', ' ');
 
 	// Write that information to the file
 	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes.db";
@@ -347,7 +349,9 @@ std::unique_ptr<Reply> MemeHandler::handleUpdate(ParamMap& params) {
 
 	std::string memeName = params["memeselect"];
 	std::string topText = params["top"];
+	std::replace(topText.begin(), topText.end(), '+', ' ');
 	std::string botText = params["bot"];
+	std::replace(botText.begin(), botText.end(), '+', ' ');
 	std::string memeID = params["id"];
 
 	// Write that information to the file
