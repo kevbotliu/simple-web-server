@@ -246,6 +246,7 @@ std::unique_ptr<Reply> MemeHandler::handleList(ParamMap& params) {
 	mutex.unlock();
 
 	page_list += "</ul>";
+	page_list += "<a href=\"/meme/new\">Make a new meme!</a>";
 
 	args.body = page_link + page_styles + page_body + page_list;
 
