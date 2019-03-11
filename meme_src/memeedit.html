@@ -45,16 +45,17 @@
     <form action="/meme/update" method="POST">
 	    <div class="form-group">
 		    <label>Choose a meme!</label>
-		    <select class="custom-select" name="memeselect">
+		    <select required class="custom-select" name="memeselect">
+          <option disabled selected hidden value="">Select a template</option>
 			    <option value="simply.jpg">One does not simply...</option>
 			    <option value="grumpy.jpg">Grumpy cat</option>
 		    </select>
 	    </div>
 	    <div class="form-group">
 		    <label>Add some text!</label>
-		    <input class="form-control" name="top" placeholder="Top text" required='required' id="top">
-        <input class="form-control" name="bot" placeholder="Bottom text" required='required' id="bot">
-        <input class="form-control" name="id" type="hidden" placeholder="ID" required='required' id="id">
+		    <input class="form-control" name="top" placeholder="Top text" required maxlength="50" id="top">
+        <input class="form-control" name="bot" placeholder="Bottom text" maxlength="50" id="bot">
+        <input class="form-control" name="id" type="hidden" placeholder="ID" required id="id">
 	    </div>
 	    <button type="submit" class="btn btn-primary">Update</button>
     </form>
