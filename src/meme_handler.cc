@@ -42,7 +42,54 @@ ParamMap MemeHandler::extract_params(const Request& request) {
 	return params;
 }
 
+std::string stringEscape(std::string& s) {
+	// Handle escape keys for top and bottom texts
+	int pos;
+	std::string b;
+	char res;
+	std::string replacer;
 
+	while ( (pos = s.find('%')) != std::string::npos) {
+		// Get the 2 hex digits after %
+		b = s.substr(pos + 1, 2);
+
+		// Convert the byte into a character
+		res = (char) (int) strtol(b.c_str(), nullptr, 16);
+		
+		// Check for "illegal" chars and escape them
+		switch (res) {
+			case '<':
+				replacer = "&lt;";
+				break;
+			case '>':
+				replacer = "&gt;";
+				break;
+			case '&':
+				replacer = "&amp;";
+				break;
+			case '\"':
+				replacer = "&quot;";
+				break;
+			case '/':
+				replacer = "&frasl;";
+				break;
+			case '!':
+				replacer = "&#33;";
+				break;
+			case '{':
+				replacer = "&#123;";
+				break;
+			case '}':
+				replacer = "&#125;";
+				break;
+			default:
+				replacer = "" + res;
+				break;
+		}
+		s.erase(pos, 3);
+		s.insert(pos, replacer);
+	}
+}
 
 std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {	
 	std::string subpath = request.get_path().erase(0, 5);
@@ -144,6 +191,8 @@ std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 		}
 	}
 
+
+
 	if ( !(rc == SQLITE_DONE || rc == SQLITE_ROW) || found == false) {
 		mutex.unlock();
 		return std::unique_ptr<Reply>(new Reply(false));		
@@ -157,6 +206,9 @@ std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 
 	ReplyArgs args;
 	args.headers.push_back(std::make_pair("Content-type", "text/html"));
+
+	stringEscape(top_text);
+	stringEscape(bottom_text);
 
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
 	std::string page_styles = "<style> body {display: flex; justify-content: center; align-items: center; flex-direction: column;} span {color: white; font: 3em bold; text-transform: uppercase; font-family: 'Oswald', sans-serif; position: absolute; text-align: center; width: 100%;} #top {left: 0; top: 0;} #bottom {left: 0; bottom: 0;} div {position: relative;} img {min-height: 75vh;}</style>";

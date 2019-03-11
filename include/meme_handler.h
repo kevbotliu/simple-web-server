@@ -20,6 +20,7 @@ private:
 	boost::mutex mutex;
 
 	ParamMap extract_params(const Request& request);
+	std::string handleEscape(std::string s);
 
 	std::unique_ptr<Reply> handleNew();
 	std::unique_ptr<Reply> handleCreate(ParamMap& params);
