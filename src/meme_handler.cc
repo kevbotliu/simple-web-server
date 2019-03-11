@@ -82,6 +82,9 @@ std::string stringEscape(std::string& s) {
 			case '}':
 				replacer = "&#125;";
 				break;
+			case ':':
+				replacer = "&#58;";
+				break;
 			default:
 				replacer = "" + res;
 				break;
