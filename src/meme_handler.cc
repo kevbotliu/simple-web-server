@@ -55,6 +55,7 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 	if (subpath.find("/update") == 0) return handleUpdate(params);
 	if (subpath.find("/view") == 0) return handleView(params);
 	if (subpath.find("/list") == 0) return handleList(params);
+	if (subpath.find("/delete") == 0) return handleDelete(params);
 
 	return std::unique_ptr<Reply>(new Reply(false));;
 }
@@ -152,6 +153,7 @@ std::unique_ptr<Reply> MemeHandler::handleView(ParamMap& params) {
 	page_body += "<div><img src=\"../static/" + image_path + "\">";
 	page_body += "<span id=\"top\">" + top_text +"</span>";
 	page_body += "<span id=\"bottom\">" + bottom_text + "</span></div>";
+	page_body += "<div><a href=\"/meme/delete?id=" + std::to_string(id) + "\" onclick=\"return confirm('Are you sure?')\">Delete</a></div>";
 	page_body += "<a href=\"/meme/edit?id=" + meme_id + "&top=" + top_text + "&bot=" + bottom_text + "\">edit</a></h1></body>";
 
 
@@ -379,6 +381,55 @@ std::unique_ptr<Reply> MemeHandler::handleUpdate(ParamMap& params) {
 	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
 	std::string page_body = "<body><h1>Meme updated with id: ";
 	page_body += "<a href=\"/meme/view?id=" + memeID + "\">" + memeID + "</a></h1></body>";
+
+	args.body = page_link + page_body;
+
+	return std::unique_ptr<Reply>(new Reply(args));
+}
+
+std::unique_ptr<Reply> MemeHandler::handleDelete(ParamMap& params)
+{
+	// Param guard
+	if (params.find("id") == params.end()) {
+		return std::unique_ptr<Reply>(new Reply(false));
+	}
+
+	int id = atoi(params["id"].c_str());
+
+	sqlite3 *meme_db;
+	int rc;
+
+	std::string filepath = config_.server_root_path + root_path_ + "/" + "saved_memes.db";
+
+	mutex.lock();
+
+	// Open SQL database
+	rc = sqlite3_open(filepath.c_str(), &meme_db);
+	if (rc) { // Failed opening
+		mutex.unlock();
+		return std::unique_ptr<Reply>(new Reply(false));
+	}
+
+	// Execute SQL statement for deletion
+	std::string sql_exec = "DELETE FROM MEMES WHERE meme_id=" + std::to_string(id) + ";";
+	char* error_message = 0;
+	rc = sqlite3_exec(meme_db, sql_exec.c_str(), NULL, 0, &error_message);
+	if (rc != SQLITE_OK) {
+		mutex.unlock();
+		std::cerr << "Error deleting" << std::endl;
+		std::cerr << error_message;
+		return std::unique_ptr<Reply>(new Reply(false));
+	}
+
+	sqlite3_close(meme_db);
+	mutex.unlock();
+
+	//Deleted page
+	ReplyArgs args;
+	args.headers.push_back(std::make_pair("Content-type", "text/html"));
+
+	std::string page_link = "<head><link href=\"https://fonts.googleapis.com/css?family=Oswald\" rel=\"stylesheet\"></head>";
+	std::string page_body = "<body><h1>Meme deleted!</h1></body>";
 
 	args.body = page_link + page_body;
 

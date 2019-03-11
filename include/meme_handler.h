@@ -26,6 +26,7 @@ private:
 	std::unique_ptr<Reply> handleList(ParamMap& params);
 	std::unique_ptr<Reply> handleEdit();
 	std::unique_ptr<Reply> handleUpdate(ParamMap& params);
+	std::unique_ptr<Reply> handleDelete(ParamMap& params);
 
 };
 #endif
