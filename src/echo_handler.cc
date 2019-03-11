@@ -1,6 +1,7 @@
 #include "echo_handler.h"
+#include "logger.h"
 
-RequestHandler* EchoHandler::create(const NginxConfig& config, const std::string& root_path) {
+RequestHandler* EchoHandler::create(const NginxConfig& config, const std::string& root_path){
 	return new EchoHandler();
 }
 
@@ -12,6 +13,11 @@ std::unique_ptr<Reply> EchoHandler::HandleRequest(const Request& request) {
 	args.headers.push_back(header);
 	args.body = request.get_raw();
 
-	return std::unique_ptr<Reply>(new Reply(args));
-	
+	std::unique_ptr<Reply> rep = std::unique_ptr<Reply>(new Reply(args));
+
+	std::string message = "Echo Handler::ResponseMetrics::Status Code:" + std::to_string(rep->get_status_code());
+
+	log.log(message, boost::log::trivial::info);
+
+	return rep;
 }

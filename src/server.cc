@@ -52,7 +52,7 @@ void server::handle_accept(session* new_session, const boost::system::error_code
     if (!error) {
 
       std::string ip_addr = new_session->socket().remote_endpoint().address().to_string();
-      std::string message = "Session: IP: " + ip_addr + ": Starting A New Session...";
+      std::string message = "Session::ResponseMetrics::IP: " + ip_addr + ": Starting A New Session...";
       log.log(message, boost::log::trivial::info);
       new_session->start();
     }

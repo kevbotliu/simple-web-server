@@ -23,7 +23,12 @@ std::unique_ptr<Reply> StatusHandler::HandleRequest(const Request& request) {
 	for (auto handler : config_.handler_blocks) {
 		args.body += handler.name + ": " + handler.path + "\n";
 	}
-	
-	return std::unique_ptr<Reply>(new Reply(args));
-	
+
+	std::unique_ptr<Reply> rep = std::unique_ptr<Reply>(new Reply(args));
+
+	std::string message = "Status Handler::ResponseMetrics::Status Code:" + std::to_string(rep->get_status_code());
+
+	log.log(message, boost::log::trivial::info);
+
+	return rep;
 }

@@ -16,7 +16,13 @@ std::unique_ptr<Reply> StaticHandler::HandleRequest(const Request& request) {
 	ReplyArgs args;
 	args = build_response(request);
 
-	return std::unique_ptr<Reply>(new Reply(args));
+	std::unique_ptr<Reply> rep = std::unique_ptr<Reply>(new Reply(args));
+
+	std::string message = "Static Handler::ResponseMetrics::Status Code:" + std::to_string(rep->get_status_code());
+
+	log.log(message, boost::log::trivial::info);
+
+	return rep;
 }
 
 ReplyArgs StaticHandler::build_response(const Request& request) {

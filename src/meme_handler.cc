@@ -47,17 +47,26 @@ std::unique_ptr<Reply> MemeHandler::HandleRequest(const Request& request) {
 	std::string subpath = request.get_path().erase(0, 5);
 	ParamMap params = extract_params(request);
 
+	std::unique_ptr<Reply> rep;
 	if (subpath.empty() ||
 		subpath == "/" ||
-		subpath.find("/new") == 0) return handleNew();
-	if (subpath.find("/create") == 0) return handleCreate(params);
-	if (subpath.find("/edit") == 0) return handleEdit();
-	if (subpath.find("/update") == 0) return handleUpdate(params);
-	if (subpath.find("/view") == 0) return handleView(params);
-	if (subpath.find("/list") == 0) return handleList(params);
-	if (subpath.find("/delete") == 0) return handleDelete(params);
+		subpath.find("/new") == 0) rep = handleNew();
+	else if (subpath.find("/create") == 0) rep = handleCreate(params);
+	else if (subpath.find("/edit") == 0) rep = handleEdit();
+	else if (subpath.find("/update") == 0) rep = handleUpdate(params);
+	else if (subpath.find("/view") == 0) rep = handleView(params);
+	else if (subpath.find("/list") == 0) rep = handleList(params);
+	else if (subpath.find("/delete") == 0) rep = handleDelete(params);
 
-	return std::unique_ptr<Reply>(new Reply(false));;
+	else {
+		rep = std::unique_ptr<Reply>(new Reply(false));
+	}
+	
+	std::string message = "Meme Handler::ResponseMetrics::Status Code:" + std::to_string(rep->get_status_code());
+
+	log.log(message, boost::log::trivial::info);
+
+	return rep;
 }
 
 // Handle creating memes

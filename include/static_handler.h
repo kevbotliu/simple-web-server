@@ -4,6 +4,7 @@
 #include "request_handler.h"
 #include "pathfinder.h"
 #include <boost/thread.hpp>
+#include "logger.h"
 
 class StaticHandler : public RequestHandler {
 public:
@@ -14,11 +15,12 @@ public:
 private:
 	NginxConfig config_;
 	std::string root_path_;
-	StaticHandler(const NginxConfig& config, std::string root_path) : config_(config), root_path_(root_path) {}
+	StaticHandler(const NginxConfig& config, std::string root_path) : config_(config), root_path_(root_path), log() {}
 	std::string ext;
 
 	boost::mutex mutex;
 
 	ReplyArgs build_response(const Request& request);
+	logger log;
 };
 #endif

@@ -9,5 +9,10 @@ std::unique_ptr<Reply> HealthHandler::HandleRequest(const Request& request) {
 
 	ReplyArgs args;
 	args.body = "OK";
-	return std::unique_ptr<Reply>(new Reply(args));
+
+	std::unique_ptr<Reply> rep = std::unique_ptr<Reply>(new Reply(args));
+	std::string message = "Health Handler::ResponseMetrics::Status Code:" + std::to_string(rep->get_status_code());
+	log.log(message, boost::log::trivial::info);
+
+	return rep;
 }
